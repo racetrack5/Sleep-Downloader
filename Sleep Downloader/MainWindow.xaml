@@ -1,0 +1,77 @@
+﻿<Window x:Class="Sleep_Downloader.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sleep_Downloader"
+        mc:Ignorable="d"
+        Title="Sleep Downloader" Height="650" Width="1225" ResizeMode="CanMinimize">
+    <TabControl Margin="10,10,10,10">
+        <TabItem Header="Sleep Studies" BorderBrush="Black">
+            <TabItem.Background>
+                <LinearGradientBrush EndPoint="0,1">
+                    <GradientStop Color="#FFF0F0F0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </TabItem.Background>
+            <Grid Background="White" Height="602" Margin="0,0,0,0">
+                <GroupBox Header="Sleep Reports" HorizontalAlignment="Left" Height="468" Margin="19,81,0,0" VerticalAlignment="Top" Width="535"/>
+                <TextBox x:Name="cFolderPath" HorizontalAlignment="Left" Height="52" Margin="154,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="876" Text="C:\Users\n8831599\source\repos\Sleep Downloader\Sleep Downloader\bin\Debug\netcoreapp3.1\Sleep Studies"/>
+                <Button x:Name="SelectFolder" Content="Select" HorizontalAlignment="Left" Height="52" Margin="1045,14,0,0" VerticalAlignment="Top" Width="122" FontSize="14" Click="SelectFolder_Click"/>
+                <Label Content="Discovered archives:" HorizontalAlignment="Left" Height="30" Margin="41,109,0,0" VerticalAlignment="Top" Width="135"/>
+                <Label Content="Select reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="41,262,0,0" VerticalAlignment="Top" Width="490"/>
+                <TextBox x:Name="cSelect" HorizontalAlignment="Left" Height="40" Margin="41,292,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="*report.doc"/>
+                <Label Content="Filter reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="41,337,0,0" VerticalAlignment="Top" Width="490"/>
+                <TextBox x:Name="cFilter" HorizontalAlignment="Left" Height="40" Margin="41,367,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="PLM"/>
+                <Button x:Name="cTest" Content="Test/Count Hits" HorizontalAlignment="Left" Height="35" Margin="41,419,0,0" VerticalAlignment="Top" Width="122" Click="Test_Click"/>
+                <Label x:Name="lReturnedHits" Content="" HorizontalAlignment="Left" Height="32" Margin="183,419,0,0" VerticalAlignment="Top" Width="348"/>
+                <Grid HorizontalAlignment="Left" Height="118" Margin="41,179,0,0" VerticalAlignment="Top" Width="490"/>
+                <DataGrid x:Name="cArchiveList" HorizontalAlignment="Left" Height="113" VerticalAlignment="Top" Width="245" AutoGenerateColumns="False" Margin="41,144,0,0" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn CanUserSort="False" Header="Archive Name" Binding="{Binding Name}" Width="240" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Label Content="Sleep archive directory:&#xA;" HorizontalAlignment="Left" Height="30" Margin="9,9,0,0" VerticalAlignment="Top" Width="145"/>
+                <Label Content="Output format:" HorizontalAlignment="Left" Height="30" Margin="41,461,0,0" VerticalAlignment="Top" Width="490"/>
+                <ComboBox HorizontalAlignment="Left" Height="28" Margin="154,501,0,0" VerticalAlignment="Top" Width="241" IsEnabled="False">
+                    <ComboBoxItem Content="Comma Separated Values" IsSelected="True"/>
+                    <ComboBoxItem Content="SQLite database (.db)"/>
+                </ComboBox>
+                <Button x:Name="cRun" Content="Run" HorizontalAlignment="Left" Height="63" Margin="409,466,0,0" VerticalAlignment="Top" Width="122" Click="Run_Click"/>
+                <GroupBox Header="Output" HorizontalAlignment="Left" Height="468" Margin="571,81,0,0" VerticalAlignment="Top" Width="595">
+                    <TextBox x:Name="tOutput" HorizontalAlignment="Center" Height="380" TextWrapping="Wrap" Width="550" RenderTransformOrigin="0.5,0.5" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top" Margin="0,20,0,0"/>
+                </GroupBox>
+                <Label x:Name="lCount" Content="" HorizontalAlignment="Left" Height="32" Margin="594,504,0,0" VerticalAlignment="Top" Width="549"/>
+                <CheckBox x:Name="cSkip" Content="On error, continue to next report" HorizontalAlignment="Left" Height="20" Margin="314,144,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
+                <TextBox x:Name="cFileName" HorizontalAlignment="Left" Height="30" Margin="154,466,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" Text="Output.txt"/>
+                <Label Content="Options:" HorizontalAlignment="Left" Height="30" Margin="304,109,0,0" VerticalAlignment="Top" Width="135"/>
+                <CheckBox x:Name="cOutputLog" Content="Export output log" HorizontalAlignment="Left" Height="20" Margin="314,169,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
+                <CheckBox x:Name="cMissingReports" Content="Export list of missing reports" HorizontalAlignment="Left" Height="20" Margin="314,194,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
+                <CheckBox x:Name="cFilterCheck" Content="Try again without filter if missing report" HorizontalAlignment="Left" Height="19" Margin="314,219,0,0" VerticalAlignment="Top" Width="229" IsChecked="True"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Setup">
+            <Grid Background="White" Height="602" Margin="0,0,0,0">
+                <GroupBox Header="Whitelist" HorizontalAlignment="Left" Height="549" Margin="19,19,0,0" VerticalAlignment="Top" Width="613" />
+                <Label Content="Select a report to generate a new whitelist:" HorizontalAlignment="Left" Margin="41,49,0,0" Height="30" Width="379" VerticalAlignment="Top"/>
+                <Button x:Name="cSelectWhitelist" Content="Select" HorizontalAlignment="Left" Height="35" Margin="490,47,0,0" VerticalAlignment="Top" Width="122" Click="SelectWhitelist_Click"/>
+                <DataGrid x:Name="cVariablelist_New" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="275" AutoGenerateColumns="False" Margin="41,134,0,0" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn CanUserSort="False" Header="Variables" Binding="{Binding Name}" Width="240" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button x:Name="cWhitelist_Update" Content="Update" HorizontalAlignment="Left" Height="34" Margin="490,522,0,0" VerticalAlignment="Top" Width="122" Click="Test_Click" RenderTransformOrigin="0.506,0.959"/>
+                <DataGrid x:Name="cVariablelist_Current" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="275" AutoGenerateColumns="False" Margin="337,134,0,0" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn CanUserSort="False" Header="Variables" Binding="{Binding Name}" Width="240" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Label Content="Newely generated whitelist:" HorizontalAlignment="Left" Margin="41,99,0,0" Height="30" Width="179" VerticalAlignment="Top"/>
+                <Label Content="Current whitelist:" HorizontalAlignment="Left" Margin="337,99,0,0" Height="30" Width="179" VerticalAlignment="Top"/>
+                <Label Content="Updating the whitelist will rename the current whitelist will be saved as Whitelist old.txt" HorizontalAlignment="Left" Margin="41,487,0,0" Height="30" Width="481" VerticalAlignment="Top"/>
+                <CheckBox x:Name="cUpdateOption" Content="Retain current fields and add new fields to whitelist" HorizontalAlignment="Left" Height="20" Margin="41,527,0,0" VerticalAlignment="Top" Width="365" IsChecked="True"/>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
