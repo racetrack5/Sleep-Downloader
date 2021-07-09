@@ -86,70 +86,6 @@ namespace Sleep_Downloader
             }
         }
 
-        private void Test_Click(object sender, RoutedEventArgs e)
-        {
-            IO ArchiveHandle = new IO();
-            List<Archives> ArchiveList = new List<Archives>();
-
-            /// Get archive list.
-            /// 
-            try
-            {
-                ArchiveList = ArchiveHandle.GetArchives(cFolderPath.Text);
-            }
-            catch
-            {
-                tOutput.Text += String.Format("{0} - ERROR obtaining archive list... stopping.\n", DateTime.Now);
-                return;
-            }
-
-            /// Junk variables.
-            /// 
-            int Counter = 0;
-
-            ArchiveList.ForEach(delegate (Archives Archive)
-            {
-                if (Archive.Selected)
-                {
-                    /// Open archive folder and find studies.
-                    /// 
-                    List<Studies> StudyList = new List<Studies>();
-
-                    try
-                    {
-                        StudyList = ArchiveHandle.GetStudies(cFolderPath.Text, Archive.Name);
-
-                        /// Open study and find report according to filter settings.
-                        /// 
-                        StudyList.ForEach(delegate (Studies Study)
-                        {
-                            try
-                            {
-                                List<Reports> ReportList = new List<Reports>();
-                                ReportList = ArchiveHandle.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text);
-                                Counter = Counter + ReportList.Count;
-                                lReturnedHits.Content = String.Format("{0} studies found...", Counter.ToString());
-                                System.Windows.Forms.Application.DoEvents();
-                            }
-                            catch
-                            {
-                                tOutput.Text += String.Format("{0} - ERROR counting reports in study {1}... skipping...\n", DateTime.Now, Study.Name);
-                                System.Windows.Forms.Application.DoEvents();
-                            }
-                        });
-
-                    }
-                    catch
-                    {
-                        tOutput.Text += String.Format("{0} - ERROR grabbing studies from {1}... skipping...\n", DateTime.Now, Archive.Name);
-                        System.Windows.Forms.Application.DoEvents();
-                    }
-                }
-            });
-            tOutput.Text += String.Format("{0} - counted {1} hits.\n", DateTime.Now, Counter.ToString());
-            lReturnedHits.Content = String.Format("{0} studies found.", Counter.ToString());
-        }
-
         private void Run_Click(object sender, RoutedEventArgs e)
         {
             IO ArchiveHandle = new IO();
@@ -184,21 +120,21 @@ namespace Sleep_Downloader
 
             /// Setup.
             /// 
-            String OutputFile = String.Format(@"Output\{0}", cFileName.Text);
-            StreamWriter Writer = new StreamWriter(OutputFile);
-            StreamWriter LogWriter = new StreamWriter(String.Format(@"Output\Log.txt"));
-            StreamWriter MissingReportWriter = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
-            StringBuilder Builder = new StringBuilder();
-            StringBuilder LogBuilder = new StringBuilder();
-            StringBuilder MissingReportBuilder = new StringBuilder();
+            String          OutputFile = String.Format(@"Output\{0}", cFileName.Text);
+            StreamWriter    Writer = new StreamWriter(OutputFile);
+            StreamWriter    LogWriter = new StreamWriter(String.Format(@"Output\Log.txt"));
+            StreamWriter    MissingReportWriter = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
+            StringBuilder   Builder = new StringBuilder();
+            StringBuilder   LogBuilder = new StringBuilder();
+            StringBuilder   MissingReportBuilder = new StringBuilder();
 
             /// Variables to be used later.
             /// 
-            string Line = "";
-            double Counter = 0;
-            double ErrorCounter = 0;
-            double MissingReportCounter = 0;
-            bool AlignmentFlag = false; /// Used to align whitelist and extracted report values.
+            string  Line = "";
+            double  Counter = 0;
+            double  ErrorCounter = 0;
+            double  MissingReportCounter = 0;
+            bool    AlignmentFlag = false; /// Used to align whitelist and extracted report values.
 
             /// Format missing report log.
             /// 
@@ -262,31 +198,6 @@ namespace Sleep_Downloader
 
                                         /// Ready for next line.
                                          Line = "";
-
-                                        /* DEBUGGING
-                                        /// Write header values.
-                                        /// 
-                                        for (int i = 0; i < Whitelist.Count; i++)
-                                        {
-                                            AlignmentFlag = false;
-                                            for (int j = 0; j < ReportValues.Count; j++)
-                                            {
-                                                if (ReportValues[j].Name == Whitelist[i].Name)
-                                                {
-                                                    Line = Line + String.Format("{0}\t", ReportValues[j].Name);
-                                                    AlignmentFlag = true;
-                                                }
-                                            }
-                                            if (AlignmentFlag == false)
-                                            {
-                                                Line = Line + "-\t";
-                                            }
-                                        }
-
-                                        Builder.AppendLine(Line);
-
-                                        Line = "";
-                                        */
 
                                         /// Write field values.
                                         /// 

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Sleep_Downloader
 {
-    class StreamFields
+    class Stream
     {
         public List<Fields> GetReport (string ReportFile, List<Fields_Whitelist> Whitelist)
         {

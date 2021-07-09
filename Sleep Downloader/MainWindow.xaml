@@ -23,7 +23,7 @@
                 <TextBox x:Name="cSelect" HorizontalAlignment="Left" Height="40" Margin="41,292,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="*report.doc"/>
                 <Label Content="Filter reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="41,337,0,0" VerticalAlignment="Top" Width="490"/>
                 <TextBox x:Name="cFilter" HorizontalAlignment="Left" Height="40" Margin="41,367,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="PLM"/>
-                <Button x:Name="cTest" Content="Test/Count Hits" HorizontalAlignment="Left" Height="35" Margin="41,419,0,0" VerticalAlignment="Top" Width="122" Click="Test_Click"/>
+                <Button x:Name="cTest" Content="Test/Count Hits" HorizontalAlignment="Left" Height="35" Margin="41,419,0,0" VerticalAlignment="Top" Width="122"/>
                 <Label x:Name="lReturnedHits" Content="" HorizontalAlignment="Left" Height="32" Margin="183,419,0,0" VerticalAlignment="Top" Width="348"/>
                 <Grid HorizontalAlignment="Left" Height="118" Margin="41,179,0,0" VerticalAlignment="Top" Width="490"/>
                 <DataGrid x:Name="cArchiveList" HorizontalAlignment="Left" Height="113" VerticalAlignment="Top" Width="245" AutoGenerateColumns="False" Margin="41,144,0,0" CanUserAddRows="False" CanUserDeleteRows="False">
@@ -60,7 +60,7 @@
                         <DataGridTextColumn CanUserSort="False" Header="Variables" Binding="{Binding Name}" Width="240" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <Button x:Name="cWhitelist_Update" Content="Update" HorizontalAlignment="Left" Height="34" Margin="490,522,0,0" VerticalAlignment="Top" Width="122" Click="Test_Click" RenderTransformOrigin="0.506,0.959"/>
+                <Button x:Name="cWhitelist_Update" Content="Update" HorizontalAlignment="Left" Height="34" Margin="490,522,0,0" VerticalAlignment="Top" Width="122" RenderTransformOrigin="0.506,0.959"/>
                 <DataGrid x:Name="cVariablelist_Current" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="275" AutoGenerateColumns="False" Margin="337,134,0,0" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn CanUserSort="False" Header="Variables" Binding="{Binding Name}" Width="240" IsReadOnly="True"/>

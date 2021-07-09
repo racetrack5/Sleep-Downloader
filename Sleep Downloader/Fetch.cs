@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace Sleep_Downloader
 {
-    class IO
+    class Fetch
     {
         public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2)
         {
