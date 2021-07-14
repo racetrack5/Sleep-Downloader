@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows;
 
 namespace Sleep_Downloader
 {
     class Fetch
     {
-        public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2)
+        public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2, int RepeatCheck)
         {
             List<Reports> ReportList = new List<Reports>();
 
@@ -34,9 +31,20 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// If no studies, try again without filter.
+            /// Double back if option selected and no report found.
             /// 
-            
+            if (RepeatCheck == 1)
+            {
+                ReportList.RemoveRange(0, ReportList.Count); /// Clear the list.
+                Files = Directory.GetFiles(JoinedPath, Filter, SearchOption.TopDirectoryOnly);
+                foreach (string File in Files)
+                {
+                    ReportList.Add(new Reports()
+                    {
+                        Name = File
+                    });
+                }
+            }
 
             /// Catch "hidden files" that Windows and other OS' leave around.
             /// 

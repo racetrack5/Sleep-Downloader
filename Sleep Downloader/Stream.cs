@@ -1,14 +1,12 @@
 ﻿using Spire.Doc;
-using System;
 using System.Collections.Generic;
-using System.IO.Enumeration;
 using System.Text.RegularExpressions;
 
 namespace Sleep_Downloader
 {
     class Stream
     {
-        public List<Fields> GetReport (string ReportFile, List<Fields_Whitelist> Whitelist)
+        public List<Fields> GetReport(string ReportFile, List<Fields_Whitelist> Whitelist)
         {
             Document Report = new Document();
 
@@ -45,17 +43,29 @@ namespace Sleep_Downloader
 
             /// Remove empty variables beginning with _.
             /// 
-            ///int j = 0;
+            int j = 0;
+            int l = -1;
+
             for (int i = 0; i < ReportValues.Count; i++)
             {
-                if (FileSystemName.MatchesSimpleExpression("_*", ReportValues[i].Name))
+                if (ReportValues[i].Name.StartsWith("_"))
                 {
-                    ///j++;
-                    ///
-                    ReportValues.RemoveAt(i);
+                    j++;
+                    if (l < 0)
+                    {
+                        l = i;
+                    }
+                }
+                else
+                {
+                    if (j > 0)
+                    {
+                        ReportValues.RemoveRange(l, j);
+                        j = 0;
+                        l = -1;
+                    }
                 }
             }
-            ///ReportValues.RemoveRange(0, j);
 
             /// Retrieve report text.
             /// 
@@ -84,6 +94,14 @@ namespace Sleep_Downloader
             {
                 Name = "ReportText",
                 Value = ReportText
+            });
+
+            /// Add path as an extra field.
+            /// 
+            ReportValues.Add(new Fields()
+            {
+                Name = "Path",
+                Value = ReportFile
             });
 
             /// Add archive and full path as extra fields.
