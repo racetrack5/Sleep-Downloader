@@ -1,20 +1,10 @@
-﻿using System;
+﻿using Spire.Doc;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Sleep_Downloader
 {
@@ -30,33 +20,32 @@ namespace Sleep_Downloader
             /// Populate current whitelist in setup tab.
             /// 
             Whitelist WhitelistHandle = new Whitelist();
-            List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
 
             try
             {
                 cVariablelist_Current.ItemsSource = WhitelistHandle.FilterFields();
+                lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
                 tOutput.Text += String.Format("{0} - whitelist found.\n", DateTime.Now);
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR fetching current whitelist...\n", DateTime.Now);
+                tOutput.Text += String.Format("{0} - ERROR fetching current whitelist.\n", DateTime.Now);
                 return;
             }
         }
 
         private void SelectFolder_Click(object sender, RoutedEventArgs e)
         {
-            using (var Dialog = new System.Windows.Forms.FolderBrowserDialog())
+            using (var Dialog = new FolderBrowserDialog())
             {
-                System.Windows.Forms.DialogResult FolderName = Dialog.ShowDialog();
+                DialogResult FolderName = Dialog.ShowDialog();
 
                 if (FolderName == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(Dialog.SelectedPath))
                 {
                     cFolderPath.Text = Dialog.SelectedPath;
                 }
             }
-            IO ArchiveHandle = new IO();
-            List<Archives> ArchiveList = new List<Archives>();
+            Fetch ArchiveHandle = new Fetch();
 
             try
             {
@@ -72,23 +61,208 @@ namespace Sleep_Downloader
 
         private void SelectWhitelist_Click(object sender, RoutedEventArgs e)
         {
-            Whitelist WhitelistHandle = new Whitelist();
-            List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+            List<Fields> ReportValues = new List<Fields>();
 
-            using (var Dialog = new System.Windows.Forms.OpenFileDialog())
+            try
             {
-                System.Windows.Forms.DialogResult FileName = Dialog.ShowDialog();
-
-                if (FileName == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(Dialog.FileName))
+                using (var Dialog = new OpenFileDialog())
                 {
-                    cVariablelist_New.ItemsSource = WhitelistHandle.FetchFields(Convert.ToString(FileName));
+                    DialogResult FileName = Dialog.ShowDialog();
+
+                    if (FileName == System.Windows.Forms.DialogResult.OK)
+                    {
+                        Document Report = new Document();
+
+                        /// Load the report.
+                        /// 
+                        Report.LoadFromFile(Dialog.FileName);
+
+                        /// Get field names from report.
+                        ///
+                        for (int i = 0; i < Report.Variables.Count; i++)
+                        {
+                            ReportValues.Add(new Fields()
+                            {
+                                Name = Report.Variables.GetNameByIndex(i),
+                                Value = Report.Variables.GetValueByIndex(i)
+                            });
+                        }
+                    }
                 }
+
+                /// Remove empty variables beginning with _.
+                /// 
+                int j = 0;
+                int k = -1;
+
+                for (int i = 0; i < ReportValues.Count; i++)
+                {
+                    if (ReportValues[i].Name.StartsWith("_"))
+                    {
+                        j++;
+                        if (k < 0)
+                        {
+                            k = i;
+                        }
+                    }
+                    else
+                    {
+                        if (j > 0)
+                        {
+                            ReportValues.RemoveRange(k, j);
+                            j = 0;
+                            k = -1;
+                        }
+                    }
+                }
+
+                /// Add report text as an extra field.
+                /// 
+                ReportValues.Add(new Fields()
+                {
+                    Name = "ReportText",
+                    Value = ""
+                });
+
+                /// Add path as an extra field.
+                /// 
+                ReportValues.Add(new Fields()
+                {
+                    Name = "Path",
+                    Value = ""
+                });
+                
+                /// Add new variables to current list (if option selected).
+                /// 
+                try
+                {
+                    if (cUpdateOption.IsChecked == true)
+                    {
+                        Whitelist WhitelistHandle = new Whitelist();
+                        List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+
+                        Whitelist = WhitelistHandle.FilterFields();
+
+                        tOutput.Text += String.Format("{0} - merging lists...\n", DateTime.Now);
+                        System.Windows.Forms.Application.DoEvents();
+
+                        /// Work through each old field and add if it doesn't exist in the new list.
+                        ///
+                        int a = 0;
+
+                        for (int i = 0; i < Whitelist.Count; i++)
+                        {
+                            for (int m = 0; m < ReportValues.Count; m++)
+                            {
+                                if (Whitelist[i].Name == ReportValues[m].Name)
+                                {
+                                    a++;
+                                }
+                            }
+
+                            if (a == 0)
+                            {
+                                ReportValues.Add(new Fields()
+                                {
+                                    Name = Whitelist[i].Name,
+                                    Value = ""
+                                });
+
+                                tOutput.Text += String.Format("{0} - adding new field: {1}\n", DateTime.Now, Whitelist[i].Name);
+
+                                System.Windows.Forms.Application.DoEvents();
+                            }
+
+                            a = 0;
+                        }
+                    }
+                }
+                catch
+                {
+                    tOutput.Text += String.Format("{0} - ERROR merging fields. Old whitelist not used.\n", DateTime.Now);
+                }
+                
+                ReportValues.Sort();
+
+                cVariablelist_New.ItemsSource = ReportValues;
+
+                /// Write to temporary file that can be renamed.
+                /// 
+                StreamWriter Writer = new StreamWriter("Temp.txt");
+                StringBuilder Builder = new StringBuilder();
+                string Line = "";
+
+                for (int i = 0; i < ReportValues.Count; i++)
+                {
+                    Line += String.Format("{0}", ReportValues[i].Name);
+                    if (i < (ReportValues.Count - 1))
+                    {
+                        Line += "\n";
+                    }
+                }
+
+                Builder.AppendLine(Line);
+                Writer.Write(Builder);
+                Writer.Flush();
+                Builder.Clear();
+                Writer.Close();
+
+                cWhitelist_Update.IsEnabled = true;
+          
+                tOutput.Text += String.Format("{0} - fields imported.\n", DateTime.Now);
+                lFields1.Content = String.Format("{0} fields", ReportValues.Count);
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR importing fields.\n", DateTime.Now);
+            }
+            
+        }
+
+        private void cWhitelist_Update_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo("Whitelist.txt");
+                if (fi.Exists)
+                {
+                    // Move file with a new name. Hence renamed.  
+                    try
+                    {
+                        tOutput.Text += String.Format("{0} - checking for previous whitelist backup... if yes, delete.\n", DateTime.Now);
+                        File.Delete("Whitelist.txt.bak");
+                    }
+                    catch
+                    {
+                        tOutput.Text += String.Format("{0} - no backup found.\n", DateTime.Now);
+                    }
+                    fi.MoveTo("Whitelist.txt.bak");
+                }
+
+                System.IO.FileInfo fi2 = new System.IO.FileInfo("Temp.txt");
+                if (fi2.Exists)
+                {
+                    // Move file with a new name. Hence renamed.
+                    // 
+                    fi2.MoveTo("Whitelist.txt");
+                }
+
+                Whitelist WhitelistHandle = new Whitelist();
+
+                cVariablelist_Current.ItemsSource = WhitelistHandle.FilterFields();
+
+                lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
+                tOutput.Text += String.Format("{0} - whitelist updated, backup created.\n", DateTime.Now);
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR updating whitelist.\n", DateTime.Now);
             }
         }
 
         private void Run_Click(object sender, RoutedEventArgs e)
         {
-            IO ArchiveHandle = new IO();
+            Fetch ArchiveHandle = new Fetch();
             List<Archives> ArchiveList = new List<Archives>();
 
             /// Get archive list.
@@ -110,6 +284,7 @@ namespace Sleep_Downloader
 
             try
             {
+                tOutput.Text += String.Format("{0} - refetching whitelist.\n", DateTime.Now);
                 Whitelist = WhitelistHandle.FilterFields();
             }
             catch
@@ -130,6 +305,11 @@ namespace Sleep_Downloader
 
             /// Variables to be used later.
             /// 
+            int RepeatCheck = 0;
+            if (cFilterCheck.IsChecked == true)
+            {
+                RepeatCheck = 1;
+            }
             string  Line = "";
             double  Counter = 0;
             double  ErrorCounter = 0;
@@ -159,7 +339,7 @@ namespace Sleep_Downloader
                             {
                                 tOutput.Text += String.Format("{0} - opening study {1}...\n", DateTime.Now, Study.Name);
                                 List<Reports> ReportList = new List<Reports>();
-                                ReportList = ArchiveHandle.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text);
+                                ReportList = ArchiveHandle.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);
 
                                 System.Windows.Forms.Application.DoEvents();
 
@@ -177,7 +357,7 @@ namespace Sleep_Downloader
                                     try
                                     {
                                         tOutput.Text += String.Format("{0} - opening report {1}...\n", DateTime.Now, Report.Name);
-                                        StreamFields StreamHandle = new StreamFields();
+                                        Stream StreamHandle = new Stream();
                                         List<Fields> ReportValues = new List<Fields>();
                                         ReportValues = StreamHandle.GetReport(Report.Name, Whitelist);
 
@@ -189,7 +369,7 @@ namespace Sleep_Downloader
                                             /// 
                                             for (int j = 0; j < Whitelist.Count; j++)
                                             {
-                                                    Line = Line + String.Format("{0}\t", Whitelist[j].Name);
+                                                Line = Line + String.Format("{0}\t", Whitelist[j].Name);
                                             }
                                             tOutput.Text += String.Format("{0} - writing headers from whitelist...\n", DateTime.Now);
                                             Builder.AppendLine(Line);
@@ -197,7 +377,7 @@ namespace Sleep_Downloader
                                         }
 
                                         /// Ready for next line.
-                                         Line = "";
+                                        Line = "";
 
                                         /// Write field values.
                                         /// 
@@ -324,11 +504,12 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Finish.
+            /// Finish and close files.
             /// 
             Writer.Close();
+            LogWriter.Close();
+            MissingReportWriter.Close();
             tOutput.Text += String.Format("{0} - finished.\n", DateTime.Now);
         }
-
     }
 }

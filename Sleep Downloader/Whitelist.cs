@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
-
 namespace Sleep_Downloader
 {
     class Whitelist
     {
-        public List<Fields_Whitelist> FilterFields ()
+        public List<Fields_Whitelist> FilterFields()
         {
             List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
 
