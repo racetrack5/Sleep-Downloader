@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Sleep_Downloader
 {
@@ -89,7 +89,7 @@ namespace Sleep_Downloader
             return StudyList;
         }
 
-        public List<Archives> GetArchives (string SelectedFolder)
+        public List<Archives> GetArchives(string SelectedFolder)
         {
             List<Archives> ArchiveList = new List<Archives>();
 

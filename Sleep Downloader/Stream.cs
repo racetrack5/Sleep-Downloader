@@ -38,7 +38,7 @@ namespace Sleep_Downloader
                 Regex rgx = new Regex("\t|\r|\n|\\s+");
                 string Result = rgx.Replace(ReportValues[i].Value, " ");
                 ReportValues[i].Value = Result;
-                
+
             }
 
             /// Remove empty variables beginning with _.
@@ -111,7 +111,7 @@ namespace Sleep_Downloader
             /// Align whitelist with report fields (so the program is not sensitive to report changes) into a seperate list to write back.
             /// 
             List<Fields> WriteValues = new List<Fields>();
-            
+
             /// Grab field from whitelist.
             /// 
             for (int i = 0; i < Whitelist.Count; i++)

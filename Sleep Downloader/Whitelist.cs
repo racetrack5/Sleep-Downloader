@@ -13,7 +13,7 @@ namespace Sleep_Downloader
 
             /// Get whitelisted fields.
             ///
-            while((Line = File.ReadLine()) != null)
+            while ((Line = File.ReadLine()) != null)
             {
                 Whitelist.Add(new Fields_Whitelist()
                 {

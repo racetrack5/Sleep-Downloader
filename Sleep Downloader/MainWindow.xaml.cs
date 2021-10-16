@@ -131,7 +131,7 @@ namespace Sleep_Downloader
                     Name = "Path",
                     Value = ""
                 });
-                
+
                 /// Add new variables to current list (if option selected).
                 /// 
                 try
@@ -181,7 +181,7 @@ namespace Sleep_Downloader
                 {
                     tOutput.Text += String.Format("{0} - ERROR merging fields. Old whitelist not used.\n", DateTime.Now);
                 }
-                
+
                 ReportValues.Sort();
 
                 cVariablelist_New.ItemsSource = ReportValues;
@@ -208,7 +208,7 @@ namespace Sleep_Downloader
                 Writer.Close();
 
                 cWhitelist_Update.IsEnabled = true;
-          
+
                 tOutput.Text += String.Format("{0} - fields imported.\n", DateTime.Now);
                 lFields1.Content = String.Format("{0} fields", ReportValues.Count);
             }
@@ -216,7 +216,7 @@ namespace Sleep_Downloader
             {
                 tOutput.Text += String.Format("{0} - ERROR importing fields.\n", DateTime.Now);
             }
-            
+
         }
 
         private void cWhitelist_Update_Click(object sender, RoutedEventArgs e)
@@ -295,13 +295,13 @@ namespace Sleep_Downloader
 
             /// Setup.
             /// 
-            String          OutputFile = String.Format(@"Output\{0}", cFileName.Text);
-            StreamWriter    Writer = new StreamWriter(OutputFile);
-            StreamWriter    LogWriter = new StreamWriter(String.Format(@"Output\Log.txt"));
-            StreamWriter    MissingReportWriter = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
-            StringBuilder   Builder = new StringBuilder();
-            StringBuilder   LogBuilder = new StringBuilder();
-            StringBuilder   MissingReportBuilder = new StringBuilder();
+            String OutputFile = String.Format(@"Output\{0}", cFileName.Text);
+            StreamWriter Writer = new StreamWriter(OutputFile);
+            StreamWriter LogWriter = new StreamWriter(String.Format(@"Output\Log.txt"));
+            StreamWriter MissingReportWriter = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
+            StringBuilder Builder = new StringBuilder();
+            StringBuilder LogBuilder = new StringBuilder();
+            StringBuilder MissingReportBuilder = new StringBuilder();
 
             /// Variables to be used later.
             /// 
@@ -310,11 +310,11 @@ namespace Sleep_Downloader
             {
                 RepeatCheck = 1;
             }
-            string  Line = "";
-            double  Counter = 0;
-            double  ErrorCounter = 0;
-            double  MissingReportCounter = 0;
-            bool    AlignmentFlag = false; /// Used to align whitelist and extracted report values.
+            string Line = "";
+            double Counter = 0;
+            double ErrorCounter = 0;
+            double MissingReportCounter = 0;
+            bool AlignmentFlag = false; /// Used to align whitelist and extracted report values.
 
             /// Format missing report log.
             /// 
