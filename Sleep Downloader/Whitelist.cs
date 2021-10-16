@@ -4,9 +4,9 @@ namespace Sleep_Downloader
 {
     class Whitelist
     {
-        public List<Fields_Whitelist> FilterFields()
+        public List<Fields> FilterFields()
         {
-            List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+            List<Fields> Whitelist = new List<Fields>();
 
             StreamReader File = new StreamReader(@"Whitelist.txt");
             string Line;
@@ -15,18 +15,20 @@ namespace Sleep_Downloader
             ///
             while ((Line = File.ReadLine()) != null)
             {
-                Whitelist.Add(new Fields_Whitelist()
+                var parts = Line.Split('\t');
+                Whitelist.Add(new Fields()
                 {
-                    Name = Line
+                    Name = parts[0],
+                    Name2 = parts[1]
                 });
             }
 
             return Whitelist;
         }
 
-        public List<Fields_Whitelist> FetchFields(string FilePath)
+        public List<Fields> FetchFields(string FilePath)
         {
-            List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+            List<Fields> Whitelist = new List<Fields>();
 
             StreamReader File = new StreamReader(FilePath);
             string Line;
@@ -35,9 +37,11 @@ namespace Sleep_Downloader
             ///
             while ((Line = File.ReadLine()) != null)
             {
-                Whitelist.Add(new Fields_Whitelist()
+                var parts = Line.Split('\t');
+                Whitelist.Add(new Fields()
                 {
-                    Name = Line
+                    Name = parts[0],
+                    Name2 = parts[1]
                 });
             }
 

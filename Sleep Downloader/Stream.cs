@@ -6,7 +6,7 @@ namespace Sleep_Downloader
 {
     class Stream
     {
-        public List<Fields> GetReport(string ReportFile, List<Fields_Whitelist> Whitelist)
+        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist)
         {
             Document Report = new Document();
 

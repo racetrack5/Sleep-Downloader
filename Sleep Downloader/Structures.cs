@@ -1,16 +1,36 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Sleep_Downloader
 {
-    public class Fields_Whitelist
+    public class Fields : IComparable<Fields>, INotifyPropertyChanged
     {
-        /// Class just for whitelist purposes (minus values).
-        public string Name { get; set; }
-    }
-
-    public class Fields : IComparable<Fields>
-    {
-        public string Name { get; set; }
+        private string name { get; set; }
+        public string Name
+        {
+            get { return this.name; }
+            set
+            {
+                if (this.name != value)
+                {
+                    this.name = value;
+                    this.NotifyPropertyChanged("Name");
+                }
+            }
+        }
+        private string name2 { get; set; }
+        public string Name2
+        {
+            get { return this.name2; }
+            set
+            {
+                if (this.name2 != value)
+                {
+                    this.name2 = value;
+                    this.NotifyPropertyChanged("Name2");
+                }
+            }
+        }
         public string Value { get; set; }
         public int CompareTo(Fields compareFields)
         {
@@ -20,6 +40,14 @@ namespace Sleep_Downloader
 
             else
                 return this.Name.CompareTo(compareFields.Name);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(string propName)
+        {
+            if (this.PropertyChanged != null)
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
     }
 

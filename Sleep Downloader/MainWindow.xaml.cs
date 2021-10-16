@@ -1,6 +1,7 @@
 ﻿using Spire.Doc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -13,6 +14,11 @@ namespace Sleep_Downloader
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// Collections to interact with.
+        /// 
+        public ObservableCollection<Fields> FieldsNew;
+        public ObservableCollection<Fields> FieldsCurrent;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -23,14 +29,42 @@ namespace Sleep_Downloader
 
             try
             {
-                cVariablelist_Current.ItemsSource = WhitelistHandle.FilterFields();
+                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                cVariablelist_Current.ItemsSource = FieldsCurrent;
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
                 tOutput.Text += String.Format("{0} - whitelist found.\n", DateTime.Now);
             }
             catch
             {
                 tOutput.Text += String.Format("{0} - ERROR fetching current whitelist.\n", DateTime.Now);
-                return;
+            }
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            Whitelist WhitelistHandle = new Whitelist();
+
+            try
+            {
+                tOutput.Text += String.Format("{0} - clearing lists...\n", DateTime.Now);
+
+                if (FieldsNew != null)
+                {
+                    FieldsNew.Clear();
+                }
+                if (FieldsCurrent != null)
+                {
+                    FieldsCurrent.Clear();
+                }
+
+                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                cVariablelist_Current.ItemsSource = FieldsCurrent;
+                lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
+                tOutput.Text += String.Format("{0} - whitelist found.\n", DateTime.Now);
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR resetting... suggest restarting tool.\n", DateTime.Now);
             }
         }
 
@@ -84,6 +118,7 @@ namespace Sleep_Downloader
                             ReportValues.Add(new Fields()
                             {
                                 Name = Report.Variables.GetNameByIndex(i),
+                                Name2 = Report.Variables.GetNameByIndex(i),
                                 Value = Report.Variables.GetValueByIndex(i)
                             });
                         }
@@ -121,6 +156,7 @@ namespace Sleep_Downloader
                 ReportValues.Add(new Fields()
                 {
                     Name = "ReportText",
+                    Name2 = "Report Text",
                     Value = ""
                 });
 
@@ -129,6 +165,7 @@ namespace Sleep_Downloader
                 ReportValues.Add(new Fields()
                 {
                     Name = "Path",
+                    Name2 = "Path",
                     Value = ""
                 });
 
@@ -139,7 +176,7 @@ namespace Sleep_Downloader
                     if (cUpdateOption.IsChecked == true)
                     {
                         Whitelist WhitelistHandle = new Whitelist();
-                        List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+                        List<Fields> Whitelist = new List<Fields>();
 
                         Whitelist = WhitelistHandle.FilterFields();
 
@@ -165,6 +202,7 @@ namespace Sleep_Downloader
                                 ReportValues.Add(new Fields()
                                 {
                                     Name = Whitelist[i].Name,
+                                    Name2 = Whitelist[i].Name2,
                                     Value = ""
                                 });
 
@@ -184,28 +222,8 @@ namespace Sleep_Downloader
 
                 ReportValues.Sort();
 
-                cVariablelist_New.ItemsSource = ReportValues;
-
-                /// Write to temporary file that can be renamed.
-                /// 
-                StreamWriter Writer = new StreamWriter("Temp.txt");
-                StringBuilder Builder = new StringBuilder();
-                string Line = "";
-
-                for (int i = 0; i < ReportValues.Count; i++)
-                {
-                    Line += String.Format("{0}", ReportValues[i].Name);
-                    if (i < (ReportValues.Count - 1))
-                    {
-                        Line += "\n";
-                    }
-                }
-
-                Builder.AppendLine(Line);
-                Writer.Write(Builder);
-                Writer.Flush();
-                Builder.Clear();
-                Writer.Close();
+                FieldsNew = new ObservableCollection<Fields>(ReportValues);
+                cVariablelist_New.ItemsSource = FieldsNew;
 
                 cWhitelist_Update.IsEnabled = true;
 
@@ -215,6 +233,24 @@ namespace Sleep_Downloader
             catch
             {
                 tOutput.Text += String.Format("{0} - ERROR importing fields.\n", DateTime.Now);
+            }
+
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Whitelist WhitelistHandle = new Whitelist();
+                FieldsCurrent.Clear();
+                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                cVariablelist_Current.ItemsSource = FieldsCurrent;
+
+                tOutput.Text += String.Format("{0} - refreshing current whitelist.\n", DateTime.Now);
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR refreshing current whitelist.\n", DateTime.Now);
             }
 
         }
@@ -239,20 +275,70 @@ namespace Sleep_Downloader
                     fi.MoveTo("Whitelist.txt.bak");
                 }
 
-                System.IO.FileInfo fi2 = new System.IO.FileInfo("Temp.txt");
-                if (fi2.Exists)
+                /// Write to new file.
+                /// 
+                List<Fields> ReportValues = new List<Fields>(FieldsNew);
+                StreamWriter Writer = new StreamWriter("Whitelist.txt");
+                StringBuilder Builder = new StringBuilder();
+                string Line = "";
+
+                for (int i = 0; i < ReportValues.Count; i++)
                 {
-                    // Move file with a new name. Hence renamed.
-                    // 
-                    fi2.MoveTo("Whitelist.txt");
+                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
+                    if (i < (ReportValues.Count - 1))
+                    {
+                        Line += "\n";
+                    }
                 }
 
-                Whitelist WhitelistHandle = new Whitelist();
+                Builder.AppendLine(Line);
+                Writer.Write(Builder);
+                Writer.Flush();
+                Builder.Clear();
+                Writer.Close();
 
-                cVariablelist_Current.ItemsSource = WhitelistHandle.FilterFields();
+                Whitelist WhitelistHandle = new Whitelist();
+                FieldsCurrent.Clear();
+                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                cVariablelist_Current.ItemsSource = FieldsCurrent;
 
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
                 tOutput.Text += String.Format("{0} - whitelist updated, backup created.\n", DateTime.Now);
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR updating whitelist.\n", DateTime.Now);
+            }
+        }
+
+        private void cWhitelistCurrent_Update_Click(object sender, RoutedEventArgs e)
+        {
+            List<Fields> ReportValues = new List<Fields>(FieldsCurrent);
+
+            try
+            {
+                StreamWriter Writer = new StreamWriter("Whitelist.txt");
+                StringBuilder Builder = new StringBuilder();
+                string Line = "";
+
+                for (int i = 0; i < ReportValues.Count; i++)
+                {
+                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
+                    if (i < (ReportValues.Count - 1))
+                    {
+                        Line += "\n";
+                    }
+                }
+
+                Builder.AppendLine(Line);
+                Writer.Write(Builder);
+                Writer.Flush();
+                Builder.Clear();
+                Writer.Close();
+
+                cWhitelist_Update.IsEnabled = true;
+
+                tOutput.Text += String.Format("{0} - whitelist updated.\n", DateTime.Now);
             }
             catch
             {
@@ -280,7 +366,7 @@ namespace Sleep_Downloader
             /// Populate field whitelist.
             /// 
             Whitelist WhitelistHandle = new Whitelist();
-            List<Fields_Whitelist> Whitelist = new List<Fields_Whitelist>();
+            List<Fields> Whitelist = new List<Fields>();
 
             try
             {
@@ -369,7 +455,7 @@ namespace Sleep_Downloader
                                             /// 
                                             for (int j = 0; j < Whitelist.Count; j++)
                                             {
-                                                Line = Line + String.Format("{0}\t", Whitelist[j].Name);
+                                                Line = Line + String.Format("{0}\t", Whitelist[j].Name2);
                                             }
                                             tOutput.Text += String.Format("{0} - writing headers from whitelist...\n", DateTime.Now);
                                             Builder.AppendLine(Line);
