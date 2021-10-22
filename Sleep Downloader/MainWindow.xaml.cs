@@ -285,7 +285,7 @@ namespace Sleep_Downloader
 
                 for (int i = 0; i < ReportValues.Count; i++)
                 {
-                    Line += String.Format("{0}\t{1}\t{2}", ReportValues[i].Name, ReportValues[i].Name2);
+                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
                     if (i < (ReportValues.Count - 1))
                     {
                         Line += "\n";
