@@ -32,12 +32,12 @@ namespace Sleep_Downloader
             }
         }
         public string Value { get; set; }
+
         public int CompareTo(Fields compareFields)
         {
             // A null value means that this object is greater.
             if (compareFields == null)
                 return 1;
-
             else
                 return this.Name.CompareTo(compareFields.Name);
         }

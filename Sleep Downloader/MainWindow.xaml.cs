@@ -23,6 +23,8 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
+            tOutput.Text += String.Format("Sleep Downloader version 1.1\n\n", DateTime.Now);
+
             /// Populate current whitelist in setup tab.
             /// 
             Whitelist WhitelistHandle = new Whitelist();
@@ -79,6 +81,7 @@ namespace Sleep_Downloader
                     cFolderPath.Text = Dialog.SelectedPath;
                 }
             }
+
             Fetch ArchiveHandle = new Fetch();
 
             try
@@ -117,10 +120,10 @@ namespace Sleep_Downloader
                         {
                             ReportValues.Add(new Fields()
                             {
-                                Name = Report.Variables.GetNameByIndex(i),
-                                Name2 = Report.Variables.GetNameByIndex(i),
-                                Value = Report.Variables.GetValueByIndex(i)
-                            });
+                                Name        = Report.Variables.GetNameByIndex(i),
+                                Name2       = Report.Variables.GetNameByIndex(i),
+                                Value       = Report.Variables.GetValueByIndex(i)
+                            }); ;
                         }
                     }
                 }
@@ -220,8 +223,6 @@ namespace Sleep_Downloader
                     tOutput.Text += String.Format("{0} - ERROR merging fields. Old whitelist not used.\n", DateTime.Now);
                 }
 
-                ReportValues.Sort();
-
                 FieldsNew = new ObservableCollection<Fields>(ReportValues);
                 cVariablelist_New.ItemsSource = FieldsNew;
 
@@ -284,7 +285,7 @@ namespace Sleep_Downloader
 
                 for (int i = 0; i < ReportValues.Count; i++)
                 {
-                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
+                    Line += String.Format("{0}\t{1}\t{2}", ReportValues[i].Name, ReportValues[i].Name2);
                     if (i < (ReportValues.Count - 1))
                     {
                         Line += "\n";
@@ -298,7 +299,6 @@ namespace Sleep_Downloader
                 Writer.Close();
 
                 Whitelist WhitelistHandle = new Whitelist();
-                FieldsCurrent.Clear();
                 FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
                 cVariablelist_Current.ItemsSource = FieldsCurrent;
 

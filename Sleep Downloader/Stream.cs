@@ -81,7 +81,7 @@ namespace Sleep_Downloader
             int index = ReportText.IndexOf("Signed");
             if (index >= 0)
             {
-                ReportText = ReportText.Substring(24, index);
+                ReportText = ReportText.Substring(30, index);
             }
 
             Regex rgx2 = new Regex("\t|\r|\n|\\s+");
@@ -104,10 +104,6 @@ namespace Sleep_Downloader
                 Value = ReportFile
             });
 
-            /// Add archive and full path as extra fields.
-            /// 
-
-
             /// Align whitelist with report fields (so the program is not sensitive to report changes) into a seperate list to write back.
             /// 
             List<Fields> WriteValues = new List<Fields>();
@@ -128,14 +124,11 @@ namespace Sleep_Downloader
                             Value = ReportValues[k].Value
                         });
                     }
-                    /// Could put information about discarded fields here?
-                    /// 
                 }
             }
 
             /// Cull duplicate fields (appears to happen with the name field). Culls forwards, not backwards.
             /// 
-
             for (int i = 0; i < WriteValues.Count; i++)
             {
                 for (int k = i + 1; k < WriteValues.Count; k++)
