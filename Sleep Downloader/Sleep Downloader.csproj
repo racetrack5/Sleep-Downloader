@@ -13,6 +13,9 @@
 	<UseWindowsForms>true</UseWindowsForms>
     <StartupObject></StartupObject>
     <AssemblyName>Sleep Downloader</AssemblyName>
+    <Version>1.1.0</Version>
+    <Authors>Andrew Collaro</Authors>
+    <Company>Queensland Health</Company>
   </PropertyGroup>
 
   <ItemGroup>
