@@ -6,7 +6,7 @@ namespace Sleep_Downloader
 {
     class Stream
     {
-        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist)
+        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist, int ReportCullVal)
         {
             Document Report = new Document();
 
@@ -81,7 +81,7 @@ namespace Sleep_Downloader
             int index = ReportText.IndexOf("Signed");
             if (index >= 0)
             {
-                ReportText = ReportText.Substring(30, index);
+                ReportText = ReportText.Substring(ReportCullVal, index);
             }
 
             Regex rgx2 = new Regex("\t|\r|\n|\\s+");

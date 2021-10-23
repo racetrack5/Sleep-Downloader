@@ -17,7 +17,7 @@
                         <GradientStop Color="White" Offset="1"/>
                     </LinearGradientBrush>
                 </TabItem.Background>
-                <Grid Background="White" VerticalAlignment="Top" Height="550" Width="575">
+                <Grid>
                     <TextBox x:Name="cFolderPath" HorizontalAlignment="Left" Height="42" Margin="20,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="394"/>
                     <Button x:Name="SelectFolder" Content="Select" HorizontalAlignment="Left" Height="42" Margin="427,45,0,0" VerticalAlignment="Top" Width="115" Click="SelectFolder_Click"/>
                     <Label Content="Discovered archives:" HorizontalAlignment="Left" Height="30" Margin="35,145,0,0" VerticalAlignment="Top" Width="135"/>
@@ -43,26 +43,28 @@
                     <CheckBox x:Name="cOutputLog" Content="Export output log" HorizontalAlignment="Left" Height="20" Margin="300,205,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
                     <CheckBox x:Name="cMissingReports" Content="Export list of missing reports" HorizontalAlignment="Left" Height="20" Margin="301,230,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
                     <CheckBox x:Name="cFilterCheck" Content="Try again without filter if missing report" HorizontalAlignment="Left" Height="19" Margin="300,255,0,0" VerticalAlignment="Top" Width="229" IsChecked="True"/>
+                    <Label Content="Report text culling value:" HorizontalAlignment="Left" Height="25" Margin="298,274,0,0" VerticalAlignment="Top" Width="140"/>
+                    <TextBox x:Name="cReportTextValue" HorizontalAlignment="Left" Height="20" Margin="450,278,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="34" Text="30" TextAlignment="Right"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Whitelist">
-                <Grid Background="White" Height="553" Margin="0,0,10,0" VerticalAlignment="Top" Width="550">
+                <Grid>
                     <Label Content="Select a report to generate a new whitelist:" HorizontalAlignment="Left" Margin="10,20,0,0" Height="30" Width="379" VerticalAlignment="Top"/>
                     <Button x:Name="cSelectWhitelist" Content="Select" HorizontalAlignment="Left" Height="35" Margin="440,25,0,0" VerticalAlignment="Top" Width="100" Click="SelectWhitelist_Click"/>
                     <DataGrid x:Name="cVariablelist_New" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="20,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
                         <DataGrid.Columns>
-                            <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="105" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="105" IsReadOnly="False"/>
+                            <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="115" IsReadOnly="True"/>
+                            <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="115" IsReadOnly="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button x:Name="cWhitelist_Update" Content="Overwite" HorizontalAlignment="Left" Height="34" Margin="148,500,0,0" VerticalAlignment="Top" Width="122" RenderTransformOrigin="0.506,0.959" Click="cWhitelist_Update_Click" IsEnabled="False"/>
                     <DataGrid x:Name="cVariablelist_Current" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="290,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
                         <DataGrid.Columns>
-                            <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="105" IsReadOnly="True"/>
-                            <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="105" IsReadOnly="False"/>
+                            <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="115" IsReadOnly="True"/>
+                            <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="115" IsReadOnly="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Content="New whitelist:" HorizontalAlignment="Left" Margin="20,108,0,0" Height="30" Width="179" VerticalAlignment="Top"/>
+                    <Label Content="New whitelist:" HorizontalAlignment="Left" Margin="20,108,0,0" Height="30" Width="100" VerticalAlignment="Top"/>
                     <Label Content="Current whitelist:" HorizontalAlignment="Left" Margin="290,108,0,0" Height="30" Width="178" VerticalAlignment="Top"/>
                     <CheckBox x:Name="cUpdateOption" Content="Retain current fields and add new fields to whitelist" HorizontalAlignment="Left" Height="20" Margin="15,50,0,0" VerticalAlignment="Top" Width="292" IsChecked="True"/>
                     <Label x:Name="lFields1" Content="" HorizontalAlignment="Left" Margin="25,500,0,0" Height="30" Width="120" VerticalAlignment="Top" RenderTransformOrigin="0.35,0.501"/>
@@ -70,6 +72,10 @@
                     <Button x:Name="cWhitelistCurrent_Update" Content="Update" HorizontalAlignment="Left" Height="34" Margin="418,500,0,0" VerticalAlignment="Top" Width="122" RenderTransformOrigin="0.506,0.959" Click="cWhitelistCurrent_Update_Click" IsEnabled="True"/>
                     <Button x:Name="cRefresh" Content="Refresh" HorizontalAlignment="Left" Height="35" Margin="440,65,0,0" VerticalAlignment="Top" Width="100" Click="Refresh_Click"/>
                     <Button x:Name="cReset" Content="Reset" HorizontalAlignment="Left" Height="35" Margin="335,65,0,0" VerticalAlignment="Top" Width="100" Click="Reset_Click"/>
+                    <Button x:Name="bNewUp" Content="Up" HorizontalAlignment="Left" Height="25" Margin="185,108,0,0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="-0.265,-0.148" Click="bNewUp_Click"/>
+                    <Button x:Name="bNewDown" Content="Down" HorizontalAlignment="Left" Height="25" Margin="230,108,0,0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="-0.265,-0.148" Click="bNewDown_Click"/>
+                    <Button x:Name="bCurrentUp" Content="Up" HorizontalAlignment="Left" Height="25" Margin="455,108,0,0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="-0.265,-0.148" Click="bCurrentUp_Click"/>
+                    <Button x:Name="bCurrentDown" Content="Down" HorizontalAlignment="Left" Height="25" Margin="500,108,0,0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="-0.265,-0.148" Click="bCurrentDown_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

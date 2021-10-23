@@ -158,18 +158,18 @@ namespace Sleep_Downloader
                 /// 
                 ReportValues.Add(new Fields()
                 {
-                    Name = "ReportText",
-                    Name2 = "Report Text",
-                    Value = ""
+                    Name    = "ReportText",
+                    Name2   = "Report Text",
+                    Value   = ""
                 });
 
                 /// Add path as an extra field.
                 /// 
                 ReportValues.Add(new Fields()
                 {
-                    Name = "Path",
-                    Name2 = "Path",
-                    Value = ""
+                    Name    = "Path",
+                    Name2   = "Path",
+                    Value   = ""
                 });
 
                 /// Add new variables to current list (if option selected).
@@ -204,9 +204,9 @@ namespace Sleep_Downloader
                             {
                                 ReportValues.Add(new Fields()
                                 {
-                                    Name = Whitelist[i].Name,
-                                    Name2 = Whitelist[i].Name2,
-                                    Value = ""
+                                    Name    = Whitelist[i].Name,
+                                    Name2   = Whitelist[i].Name2,
+                                    Value   = ""
                                 });
 
                                 tOutput.Text += String.Format("{0} - adding new field: {1}\n", DateTime.Now, Whitelist[i].Name);
@@ -278,9 +278,9 @@ namespace Sleep_Downloader
 
                 /// Write to new file.
                 /// 
-                List<Fields> ReportValues = new List<Fields>(FieldsNew);
-                StreamWriter Writer = new StreamWriter("Whitelist.txt");
-                StringBuilder Builder = new StringBuilder();
+                List<Fields> ReportValues   = new List<Fields>(FieldsNew);
+                StreamWriter Writer         = new StreamWriter("Whitelist.txt");
+                StringBuilder Builder       = new StringBuilder();
                 string Line = "";
 
                 for (int i = 0; i < ReportValues.Count; i++)
@@ -298,9 +298,9 @@ namespace Sleep_Downloader
                 Builder.Clear();
                 Writer.Close();
 
-                Whitelist WhitelistHandle = new Whitelist();
-                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
-                cVariablelist_Current.ItemsSource = FieldsCurrent;
+                Whitelist WhitelistHandle           = new Whitelist();
+                FieldsCurrent                       = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                cVariablelist_Current.ItemsSource   = FieldsCurrent;
 
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
                 tOutput.Text += String.Format("{0} - whitelist updated, backup created.\n", DateTime.Now);
@@ -317,9 +317,9 @@ namespace Sleep_Downloader
 
             try
             {
-                StreamWriter Writer = new StreamWriter("Whitelist.txt");
-                StringBuilder Builder = new StringBuilder();
-                string Line = "";
+                StreamWriter Writer     = new StreamWriter("Whitelist.txt");
+                StringBuilder Builder   = new StringBuilder();
+                string Line             = "";
 
                 for (int i = 0; i < ReportValues.Count; i++)
                 {
@@ -381,13 +381,13 @@ namespace Sleep_Downloader
 
             /// Setup.
             /// 
-            String OutputFile = String.Format(@"Output\{0}", cFileName.Text);
-            StreamWriter Writer = new StreamWriter(OutputFile);
-            StreamWriter LogWriter = new StreamWriter(String.Format(@"Output\Log.txt"));
-            StreamWriter MissingReportWriter = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
-            StringBuilder Builder = new StringBuilder();
-            StringBuilder LogBuilder = new StringBuilder();
-            StringBuilder MissingReportBuilder = new StringBuilder();
+            String OutputFile                   = String.Format(@"Output\{0}", cFileName.Text);
+            StreamWriter Writer                 = new StreamWriter(OutputFile);
+            StreamWriter LogWriter              = new StreamWriter(String.Format(@"Output\Log.txt"));
+            StreamWriter MissingReportWriter    = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
+            StringBuilder Builder               = new StringBuilder();
+            StringBuilder LogBuilder            = new StringBuilder();
+            StringBuilder MissingReportBuilder  = new StringBuilder();
 
             /// Variables to be used later.
             /// 
@@ -396,9 +396,9 @@ namespace Sleep_Downloader
             {
                 RepeatCheck = 1;
             }
-            string Line = "";
-            double Counter = 0;
-            double ErrorCounter = 0;
+            string Line                 = "";
+            double Counter              = 0;
+            double ErrorCounter         = 0;
             double MissingReportCounter = 0;
             bool AlignmentFlag = false; /// Used to align whitelist and extracted report values.
 
@@ -445,7 +445,7 @@ namespace Sleep_Downloader
                                         tOutput.Text += String.Format("{0} - opening report {1}...\n", DateTime.Now, Report.Name);
                                         Stream StreamHandle = new Stream();
                                         List<Fields> ReportValues = new List<Fields>();
-                                        ReportValues = StreamHandle.GetReport(Report.Name, Whitelist);
+                                        ReportValues = StreamHandle.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text));
 
                                         System.Windows.Forms.Application.DoEvents();
 
@@ -596,6 +596,154 @@ namespace Sleep_Downloader
             LogWriter.Close();
             MissingReportWriter.Close();
             tOutput.Text += String.Format("{0} - finished.\n", DateTime.Now);
+        }
+
+        private void bNewUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cVariablelist_New.SelectedIndex >= 0)
+                {
+                    /// Get index of selected field.
+                    /// 
+                    int i = cVariablelist_New.SelectedIndex;
+                    int j = i - 1;
+                    string TempName     = FieldsNew[i].Name;
+                    string TempName2    = FieldsNew[i].Name2;
+                    string TempValue    = FieldsNew[i].Value;
+
+                    FieldsNew[i].Name   = FieldsNew[j].Name;
+                    FieldsNew[i].Name2  = FieldsNew[j].Name2;
+                    FieldsNew[i].Value  = FieldsNew[j].Value;
+
+                    FieldsNew[j].Name   = TempName;
+                    FieldsNew[j].Name2  = TempName2;
+                    FieldsNew[j].Value  = TempValue;
+
+                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+
+                    cVariablelist_New.SelectedIndex = j;
+                }
+                else
+                {
+                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                }
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+            }
+        }
+
+        private void bNewDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cVariablelist_New.SelectedIndex >= 0)
+                {
+                    /// Get index of selected field.
+                    /// 
+                    int i = cVariablelist_New.SelectedIndex;
+                    int j = i + 1;
+                    string TempName     = FieldsNew[i].Name;
+                    string TempName2    = FieldsNew[i].Name2;
+                    string TempValue    = FieldsNew[i].Value;
+
+                    FieldsNew[i].Name   = FieldsNew[j].Name;
+                    FieldsNew[i].Name2  = FieldsNew[j].Name2;
+                    FieldsNew[i].Value  = FieldsNew[j].Value;
+
+                    FieldsNew[j].Name   = TempName;
+                    FieldsNew[j].Name2  = TempName2;
+                    FieldsNew[j].Value  = TempValue;
+
+                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+
+                    cVariablelist_New.SelectedIndex = j;
+                }
+                else
+                {
+                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                }
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+            }
+        }
+
+        private void bCurrentUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cVariablelist_Current.SelectedIndex >= 0)
+                {
+                    /// Get index of selected field.
+                    /// 
+                    int i = cVariablelist_Current.SelectedIndex;
+                    int j = i - 1;
+                    string TempName         = FieldsCurrent[i].Name;
+                    string TempName2        = FieldsCurrent[i].Name2;
+                    string TempValue        = FieldsCurrent[i].Value;
+
+                    FieldsCurrent[i].Name   = FieldsCurrent[j].Name;
+                    FieldsCurrent[i].Name2  = FieldsCurrent[j].Name2;
+                    FieldsCurrent[i].Value  = FieldsCurrent[j].Value;
+
+                    FieldsCurrent[j].Name   = TempName;
+                    FieldsCurrent[j].Name2  = TempName2;
+                    FieldsCurrent[j].Value  = TempValue;
+
+                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+
+                    cVariablelist_Current.SelectedIndex = j;
+                }
+                else
+                {
+                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                }
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+            }
+        }
+
+        private void bCurrentDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cVariablelist_Current.SelectedIndex >= 0)
+                {
+                    /// Get index of selected field.
+                    /// 
+                    int i = cVariablelist_Current.SelectedIndex;
+                    int j = i + 1;
+                    string TempName         = FieldsCurrent[i].Name;
+                    string TempName2        = FieldsCurrent[i].Name2;
+                    string TempValue        = FieldsCurrent[i].Value;
+
+                    FieldsCurrent[i].Name   = FieldsCurrent[j].Name;
+                    FieldsCurrent[i].Name2  = FieldsCurrent[j].Name2;
+                    FieldsCurrent[i].Value  = FieldsCurrent[j].Value;
+
+                    FieldsCurrent[j].Name   = TempName;
+                    FieldsCurrent[j].Name2  = TempName2;
+                    FieldsCurrent[j].Value  = TempValue;
+
+                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+
+                    cVariablelist_Current.SelectedIndex = j;
+                }
+                else
+                {
+                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                }
+            }
+            catch
+            {
+                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+            }
         }
     }
 }
