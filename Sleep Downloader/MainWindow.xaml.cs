@@ -23,7 +23,7 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
-            tOutput.Text += String.Format("Sleep Downloader version 1.1\n\n", DateTime.Now);
+            tOutput.Text += String.Format("Sleep Downloader version 1.2.1\n\n", DateTime.Now);
 
             /// Populate current whitelist in setup tab.
             /// 
@@ -351,6 +351,11 @@ namespace Sleep_Downloader
             Fetch ArchiveHandle = new Fetch();
             List<Archives> ArchiveList = new List<Archives>();
 
+            if (cOutputEnable.IsChecked == false)
+            {
+                tOutput.Text += String.Format("{0} - output disbled.\n", DateTime.Now);
+            }
+
             /// Get archive list.
             /// 
             try
@@ -359,8 +364,11 @@ namespace Sleep_Downloader
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR obtaining archive list... stopping.\n", DateTime.Now);
-                return;
+                if (cOutputEnable.IsChecked == true)
+                {
+                    tOutput.Text += String.Format("{0} - ERROR obtaining archive list... stopping.\n", DateTime.Now);
+                    return;
+                }
             }
 
             /// Populate field whitelist.
@@ -370,12 +378,18 @@ namespace Sleep_Downloader
 
             try
             {
-                tOutput.Text += String.Format("{0} - refetching whitelist.\n", DateTime.Now);
+                if (cOutputEnable.IsChecked == true)
+                {
+                    tOutput.Text += String.Format("{0} - refetching whitelist.\n", DateTime.Now);
+                }
                 Whitelist = WhitelistHandle.FilterFields();
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR applying whitelist... stopping.\n", DateTime.Now);
+                if (cOutputEnable.IsChecked == true)
+                {
+                    tOutput.Text += String.Format("{0} - ERROR applying whitelist... stopping.\n", DateTime.Now);
+                }
                 return;
             }
 
@@ -412,7 +426,10 @@ namespace Sleep_Downloader
                 {
                     try
                     {
-                        tOutput.Text += String.Format("{0} - opening archive {1}...\n", DateTime.Now, Archive.Name);
+                        if (cOutputEnable.IsChecked == true)
+                        {
+                            tOutput.Text += String.Format("{0} - opening archive {1}...\n", DateTime.Now, Archive.Name);
+                        }
                         List<Studies> StudyList = new List<Studies>();
                         StudyList = ArchiveHandle.GetStudies(cFolderPath.Text, Archive.Name);
 
@@ -423,7 +440,10 @@ namespace Sleep_Downloader
                         {
                             try
                             {
-                                tOutput.Text += String.Format("{0} - opening study {1}...\n", DateTime.Now, Study.Name);
+                                if (cOutputEnable.IsChecked == true)
+                                {
+                                    tOutput.Text += String.Format("{0} - opening study {1}...\n", DateTime.Now, Study.Name);
+                                }
                                 List<Reports> ReportList = new List<Reports>();
                                 ReportList = ArchiveHandle.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);
 
@@ -434,7 +454,10 @@ namespace Sleep_Downloader
                                 if (ReportList.Count == 0)
                                 {
                                     MissingReportBuilder.AppendLine(String.Format("{0}\t{1}", Archive.Name, Study.Name));
-                                    tOutput.Text += String.Format("{0} - missing report for study {1}, in archive {2}...\n", DateTime.Now, Study.Name, Archive.Name);
+                                    if (cOutputEnable.IsChecked == true)
+                                    {
+                                        tOutput.Text += String.Format("{0} - missing report for study {1}, in archive {2}...\n", DateTime.Now, Study.Name, Archive.Name);
+                                    }
                                     MissingReportCounter++;
                                 }
 
@@ -442,7 +465,10 @@ namespace Sleep_Downloader
                                 {
                                     try
                                     {
-                                        tOutput.Text += String.Format("{0} - opening report {1}...\n", DateTime.Now, Report.Name);
+                                        if (cOutputEnable.IsChecked == true)
+                                        {
+                                            tOutput.Text += String.Format("{0} - opening report {1}...\n", DateTime.Now, Report.Name);
+                                        }
                                         Stream StreamHandle = new Stream();
                                         List<Fields> ReportValues = new List<Fields>();
                                         ReportValues = StreamHandle.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text));
@@ -457,7 +483,10 @@ namespace Sleep_Downloader
                                             {
                                                 Line = Line + String.Format("{0}\t", Whitelist[j].Name2);
                                             }
-                                            tOutput.Text += String.Format("{0} - writing headers from whitelist...\n", DateTime.Now);
+                                            if (cOutputEnable.IsChecked == true)
+                                            {
+                                                tOutput.Text += String.Format("{0} - writing headers from whitelist...\n", DateTime.Now);
+                                            }
                                             Builder.AppendLine(Line);
                                             System.Windows.Forms.Application.DoEvents();
                                         }
@@ -484,7 +513,10 @@ namespace Sleep_Downloader
                                             }
                                         }
 
-                                        tOutput.Text += String.Format("{0} - writing values from {1}...\n", DateTime.Now, Report.Name);
+                                        if (cOutputEnable.IsChecked == true)
+                                        {
+                                            tOutput.Text += String.Format("{0} - writing values from {1}...\n", DateTime.Now, Report.Name);
+                                        }
                                         Builder.AppendLine(Line);
                                         System.Windows.Forms.Application.DoEvents();
 
@@ -505,13 +537,19 @@ namespace Sleep_Downloader
                                     {
                                         if (cSkip.IsChecked == true)
                                         {
-                                            tOutput.Text += String.Format("{0} - ERROR opening report {1}... skipping...\n", DateTime.Now, Report.Name);
+                                            if (cOutputEnable.IsChecked == true)
+                                            {
+                                                tOutput.Text += String.Format("{0} - ERROR opening report {1}... skipping...\n", DateTime.Now, Report.Name);
+                                            }
                                             ErrorCounter++;
                                             System.Windows.Forms.Application.DoEvents();
                                         }
                                         else
                                         {
-                                            tOutput.Text += String.Format("{0} - ERROR opening report {1}... stopping.\n", DateTime.Now, Report.Name);
+                                            if (cOutputEnable.IsChecked == true)
+                                            {
+                                                tOutput.Text += String.Format("{0} - ERROR opening report {1}... stopping.\n", DateTime.Now, Report.Name);
+                                            }
                                             ErrorCounter++;
                                             return;
                                         }
@@ -522,13 +560,19 @@ namespace Sleep_Downloader
                             {
                                 if (cSkip.IsChecked == true)
                                 {
-                                    tOutput.Text += String.Format("{0} - ERROR opening study {1}... skipping...\n", DateTime.Now, Study.Name);
+                                    if (cOutputEnable.IsChecked == true)
+                                    {
+                                        tOutput.Text += String.Format("{0} - ERROR opening study {1}... skipping...\n", DateTime.Now, Study.Name);
+                                    }
                                     ErrorCounter++;
                                     System.Windows.Forms.Application.DoEvents();
                                 }
                                 else
                                 {
-                                    tOutput.Text += String.Format("{0} - ERROR opening study {1}... stopping.\n", DateTime.Now, Study.Name);
+                                    if (cOutputEnable.IsChecked == true)
+                                    {
+                                        tOutput.Text += String.Format("{0} - ERROR opening study {1}... stopping.\n", DateTime.Now, Study.Name);
+                                    }
                                     ErrorCounter++;
                                     return;
                                 }
@@ -539,13 +583,19 @@ namespace Sleep_Downloader
                     {
                         if (cSkip.IsChecked == true)
                         {
-                            tOutput.Text += String.Format("{0} - ERROR opening archive {1}... skipping...\n", DateTime.Now, Archive.Name);
+                            if (cOutputEnable.IsChecked == true)
+                            {
+                                tOutput.Text += String.Format("{0} - ERROR opening archive {1}... skipping...\n", DateTime.Now, Archive.Name);
+                            }
                             ErrorCounter++;
                             System.Windows.Forms.Application.DoEvents();
                         }
                         else
                         {
-                            tOutput.Text += String.Format("{0} - ERROR opening archive {1}... stopping.\n", DateTime.Now, Archive.Name);
+                            if (cOutputEnable.IsChecked == true)
+                            {
+                                tOutput.Text += String.Format("{0} - ERROR opening archive {1}... stopping.\n", DateTime.Now, Archive.Name);
+                            }
                             ErrorCounter++;
                             return;
                         }
