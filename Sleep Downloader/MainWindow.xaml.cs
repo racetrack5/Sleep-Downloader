@@ -23,7 +23,7 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
-            tOutput.Text += String.Format("Sleep Downloader version 1.2.1\n\n", DateTime.Now);
+            tOutput.Text += String.Format("Sleep Downloader version 1.2.2\n\n", DateTime.Now);
 
             /// Populate current whitelist in setup tab.
             /// 
@@ -353,7 +353,7 @@ namespace Sleep_Downloader
 
             if (cOutputEnable.IsChecked == false)
             {
-                tOutput.Text += String.Format("{0} - output disbled.\n", DateTime.Now);
+                tOutput.Text += String.Format("{0} - output disbled. Running...\n", DateTime.Now);
             }
 
             /// Get archive list.
