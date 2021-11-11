@@ -23,7 +23,7 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
-            tOutput.Text += String.Format("Sleep Downloader version 1.2.2\n\n", DateTime.Now);
+            tOutput.Text += String.Format("Sleep Downloader version 1.3.0\n\n", DateTime.Now);
 
             /// Populate current whitelist in setup tab.
             /// 
@@ -471,7 +471,7 @@ namespace Sleep_Downloader
                                         }
                                         Stream StreamHandle = new Stream();
                                         List<Fields> ReportValues = new List<Fields>();
-                                        ReportValues = StreamHandle.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text));
+                                        ReportValues = StreamHandle.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text), Convert.ToInt32(cReportTextValuePost.Text));
 
                                         System.Windows.Forms.Application.DoEvents();
 

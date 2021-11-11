@@ -21,7 +21,7 @@
                     <TextBox x:Name="cFolderPath" HorizontalAlignment="Left" Height="42" Margin="20,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="394"/>
                     <Button x:Name="SelectFolder" Content="Select" HorizontalAlignment="Left" Height="42" Margin="427,45,0,0" VerticalAlignment="Top" Width="115" Click="SelectFolder_Click"/>
                     <Label Content="Discovered archives:" HorizontalAlignment="Left" Height="30" Margin="35,102,0,0" VerticalAlignment="Top" Width="135"/>
-                    <Label Content="Select reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="38,298,0,0" VerticalAlignment="Top" Width="490"/>
+                    <Label Content="Select reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="38,298,0,0" VerticalAlignment="Top" Width="238"/>
                     <TextBox x:Name="cSelect" HorizontalAlignment="Left" Height="40" Margin="40,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="*report.doc"/>
                     <Label Content="Filter reports using syntax:" HorizontalAlignment="Left" Height="30" Margin="40,373,0,0" VerticalAlignment="Top" Width="490"/>
                     <TextBox x:Name="cFilter" HorizontalAlignment="Left" Height="40" Margin="40,403,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490" Text="PLM"/>
@@ -43,9 +43,11 @@
                     <CheckBox x:Name="cOutputLog" Content="Export output log" HorizontalAlignment="Left" Height="20" Margin="300,195,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
                     <CheckBox x:Name="cMissingReports" Content="Export list of missing reports" HorizontalAlignment="Left" Height="20" Margin="300,220,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
                     <CheckBox x:Name="cFilterCheck" Content="Try again without filter if missing report" HorizontalAlignment="Left" Height="19" Margin="300,245,0,0" VerticalAlignment="Top" Width="229" IsChecked="True"/>
-                    <Label Content="Report text culling value:" HorizontalAlignment="Left" Height="25" Margin="298,264,0,0" VerticalAlignment="Top" Width="140"/>
-                    <TextBox x:Name="cReportTextValue" HorizontalAlignment="Left" Height="20" Margin="440,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="35" Text="26" TextAlignment="Right"/>
-                    <CheckBox x:Name="cOutputEnable" Content="Continuous logging (lower performance)" HorizontalAlignment="Left" Height="20" Margin="300,145,0,0" VerticalAlignment="Top" Width="242" IsChecked="True"/>
+                    <Label Content="Report pre text culling value:" HorizontalAlignment="Left" Height="29" Margin="298,264,0,0" VerticalAlignment="Top" Width="186"/>
+                    <TextBox x:Name="cReportTextValue" HorizontalAlignment="Left" Height="20" Margin="495,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="35" Text="30" TextAlignment="Right"/>
+                    <CheckBox x:Name="cOutputEnable" Content="Continuous logging (lower performance)" HorizontalAlignment="Left" Height="20" Margin="300,145,0,0" VerticalAlignment="Top" Width="242"/>
+                    <Label Content="Report text post culling value:" HorizontalAlignment="Left" Height="34" Margin="298,289,0,0" VerticalAlignment="Top" Width="186"/>
+                    <TextBox x:Name="cReportTextValuePost" HorizontalAlignment="Left" Height="20" Margin="495,293,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="35" Text="30" TextAlignment="Right"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Whitelist">

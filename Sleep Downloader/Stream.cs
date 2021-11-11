@@ -6,7 +6,7 @@ namespace Sleep_Downloader
 {
     class Stream
     {
-        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist, int ReportCullVal)
+        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist, int ReportCullVal, int ReportPostCullVal)
         {
             Document Report = new Document();
 
@@ -76,10 +76,10 @@ namespace Sleep_Downloader
             ReportText = ReportText.Substring(ReportText.IndexOf("Max CO2"));
 
 
-            /// Cull report after "Signed" - reliable point after report text.
+            /// Cull report a few chars after "Consultant" for service planning.
             /// 
-            int index = ReportText.IndexOf("Signed");
-            if (index >= 0)
+            int index = ReportText.IndexOf("Consultant");
+            if (index >= ReportPostCullVal)
             {
                 ReportText = ReportText.Substring(ReportCullVal, index);
             }
