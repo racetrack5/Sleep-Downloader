@@ -8,7 +8,7 @@ namespace Sleep_Downloader
     {
         public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2, int RepeatCheck)
         {
-            List<Reports> ReportList = new List<Reports>();
+            List<Reports> l_Report = new List<Reports>();
 
             /// Search for folders in selected path.
             /// 
@@ -17,17 +17,17 @@ namespace Sleep_Downloader
 
             foreach (string File in Files)
             {
-                ReportList.Add(new Reports()
+                l_Report.Add(new Reports()
                 {
                     Name = File
                 });
             }
 
-            for (int i = 0; i < ReportList.Count; i++)
+            for (int i = 0; i < l_Report.Count; i++)
             {
-                if (ReportList[i].Name.Contains(Filter2))
+                if (l_Report[i].Name.Contains(Filter2))
                 {
-                    ReportList.RemoveRange(i, 1);
+                    l_Report.RemoveRange(i, 1);
                 }
             }
 
@@ -35,11 +35,11 @@ namespace Sleep_Downloader
             /// 
             if (RepeatCheck == 1)
             {
-                ReportList.RemoveRange(0, ReportList.Count); /// Clear the list.
+                l_Report.RemoveRange(0, l_Report.Count); /// Clear the list.
                 Files = Directory.GetFiles(JoinedPath, Filter, SearchOption.TopDirectoryOnly);
                 foreach (string File in Files)
                 {
-                    ReportList.Add(new Reports()
+                    l_Report.Add(new Reports()
                     {
                         Name = File
                     });
@@ -48,20 +48,20 @@ namespace Sleep_Downloader
 
             /// Catch "hidden files" that Windows and other OS' leave around.
             /// 
-            for (int i = 0; i < ReportList.Count; i++)
+            for (int i = 0; i < l_Report.Count; i++)
             {
-                if (ReportList[i].Name.Contains(@"$"))
+                if (l_Report[i].Name.Contains(@"$"))
                 {
-                    ReportList.RemoveRange(i, 1);
+                    l_Report.RemoveRange(i, 1);
                 }
             }
 
-            return ReportList;
+            return l_Report;
         }
 
         public List<Studies> GetStudies(string SelectedFolder, string Archive)
         {
-            List<Studies> StudyList = new List<Studies>();
+            List<Studies> l_Study = new List<Studies>();
 
             /// Search for folders in selected path.
             /// 
@@ -70,7 +70,7 @@ namespace Sleep_Downloader
 
             foreach (string Folder in Folders)
             {
-                StudyList.Add(new Studies()
+                l_Study.Add(new Studies()
                 {
                     Name = Folder
                 });
@@ -79,19 +79,19 @@ namespace Sleep_Downloader
             /// Remove JoinedPath somehow being included in this string.
             ///
             JoinedPath += @"\";
-            for (int i = 0; i < StudyList.Count; i++)
+            for (int i = 0; i < l_Study.Count; i++)
             {
-                StudyList[i].Name = StudyList[i].Name.Replace(JoinedPath, "");
+                l_Study[i].Name = l_Study[i].Name.Replace(JoinedPath, "");
             }
 
-            StudyList.Sort();
+            l_Study.Sort();
 
-            return StudyList;
+            return l_Study;
         }
 
         public List<Archives> GetArchives(string SelectedFolder)
         {
-            List<Archives> ArchiveList = new List<Archives>();
+            List<Archives> l_Archive = new List<Archives>();
 
             /// Search for folders in selected path.
             /// 
@@ -99,7 +99,7 @@ namespace Sleep_Downloader
 
             foreach (string Folder in Folders)
             {
-                ArchiveList.Add(new Archives()
+                l_Archive.Add(new Archives()
                 {
                     Name = Folder,
                     Selected = true /// Selected by default.
@@ -109,14 +109,14 @@ namespace Sleep_Downloader
             /// Remove path from archive name for easier reading.
             /// 
             SelectedFolder += @"\";
-            for (int i = 0; i < ArchiveList.Count; i++)
+            for (int i = 0; i < l_Archive.Count; i++)
             {
-                ArchiveList[i].Name = ArchiveList[i].Name.Replace(SelectedFolder, "");
+                l_Archive[i].Name = l_Archive[i].Name.Replace(SelectedFolder, "");
             }
 
-            ArchiveList.Sort();
+            l_Archive.Sort();
 
-            return ArchiveList;
+            return l_Archive;
         }
     }
 }

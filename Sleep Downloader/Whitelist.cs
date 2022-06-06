@@ -4,7 +4,7 @@ namespace Sleep_Downloader
 {
     class Whitelist
     {
-        public List<Fields> FilterFields()
+        public List<Fields> FieldList()
         {
             List<Fields> Whitelist = new List<Fields>();
 

@@ -23,32 +23,35 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
-            tOutput.Text += String.Format("Sleep Downloader version 1.3.0\n\n", DateTime.Now);
+            Interface h_Interface = new Interface();
+
+            tOutput.Text += h_Interface.Logger("Sleep Downloader version 1.4.0\n");
 
             /// Populate current whitelist in setup tab.
             /// 
-            Whitelist WhitelistHandle = new Whitelist();
+            Whitelist h_Whitelist = new Whitelist();
 
             try
             {
-                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                FieldsCurrent = new ObservableCollection<Fields>(h_Whitelist.FieldList());
                 cVariablelist_Current.ItemsSource = FieldsCurrent;
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
-                tOutput.Text += String.Format("{0} - whitelist found.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("whitelist found");
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR fetching current whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR fetching current whitelist.\n");
             }
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            Whitelist WhitelistHandle = new Whitelist();
+            Interface h_Interface = new Interface();
+            Whitelist h_Whitelist = new Whitelist();
 
             try
             {
-                tOutput.Text += String.Format("{0} - clearing lists...\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("clearing lists...\n");
 
                 if (FieldsNew != null)
                 {
@@ -59,19 +62,21 @@ namespace Sleep_Downloader
                     FieldsCurrent.Clear();
                 }
 
-                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                FieldsCurrent = new ObservableCollection<Fields>(h_Whitelist.FieldList());
                 cVariablelist_Current.ItemsSource = FieldsCurrent;
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
-                tOutput.Text += String.Format("{0} - whitelist found.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("whitelist found.\n");
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR resetting... suggest restarting tool.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR resetting... suggest restarting tool.\n");
             }
         }
 
         private void SelectFolder_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             using (var Dialog = new FolderBrowserDialog())
             {
                 DialogResult FolderName = Dialog.ShowDialog();
@@ -82,23 +87,25 @@ namespace Sleep_Downloader
                 }
             }
 
-            Fetch ArchiveHandle = new Fetch();
+            Fetch h_Archive = new Fetch();
 
             try
             {
-                tOutput.Text += String.Format("{0} - populating archive list.\n", DateTime.Now);
-                cArchiveList.ItemsSource = ArchiveHandle.GetArchives(cFolderPath.Text);
+                tOutput.Text += h_Interface.Logger("populating archive list.\n");
+                cArchiveList.ItemsSource = h_Archive.GetArchives(cFolderPath.Text);
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR obtaining archive list... stopping.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR obtaining archive list... stopping.\n");
                 return;
             }
         }
 
         private void SelectWhitelist_Click(object sender, RoutedEventArgs e)
         {
-            List<Fields> ReportValues = new List<Fields>();
+            Interface h_Interface = new Interface();
+
+            List<Fields> Report_Contents = new List<Fields>();
 
             try
             {
@@ -118,7 +125,7 @@ namespace Sleep_Downloader
                         ///
                         for (int i = 0; i < Report.Variables.Count; i++)
                         {
-                            ReportValues.Add(new Fields()
+                            Report_Contents.Add(new Fields()
                             {
                                 Name        = Report.Variables.GetNameByIndex(i),
                                 Name2       = Report.Variables.GetNameByIndex(i),
@@ -133,9 +140,9 @@ namespace Sleep_Downloader
                 int j = 0;
                 int k = -1;
 
-                for (int i = 0; i < ReportValues.Count; i++)
+                for (int i = 0; i < Report_Contents.Count; i++)
                 {
-                    if (ReportValues[i].Name.StartsWith("_"))
+                    if (Report_Contents[i].Name.StartsWith("_"))
                     {
                         j++;
                         if (k < 0)
@@ -147,7 +154,7 @@ namespace Sleep_Downloader
                     {
                         if (j > 0)
                         {
-                            ReportValues.RemoveRange(k, j);
+                            Report_Contents.RemoveRange(k, j);
                             j = 0;
                             k = -1;
                         }
@@ -156,7 +163,7 @@ namespace Sleep_Downloader
 
                 /// Add report text as an extra field.
                 /// 
-                ReportValues.Add(new Fields()
+                Report_Contents.Add(new Fields()
                 {
                     Name    = "ReportText",
                     Name2   = "Report Text",
@@ -165,7 +172,7 @@ namespace Sleep_Downloader
 
                 /// Add path as an extra field.
                 /// 
-                ReportValues.Add(new Fields()
+                Report_Contents.Add(new Fields()
                 {
                     Name    = "Path",
                     Name2   = "Path",
@@ -178,12 +185,12 @@ namespace Sleep_Downloader
                 {
                     if (cUpdateOption.IsChecked == true)
                     {
-                        Whitelist WhitelistHandle = new Whitelist();
+                        Whitelist h_Whitelist = new Whitelist();
                         List<Fields> Whitelist = new List<Fields>();
 
-                        Whitelist = WhitelistHandle.FilterFields();
+                        Whitelist = h_Whitelist.FieldList();
 
-                        tOutput.Text += String.Format("{0} - merging lists...\n", DateTime.Now);
+                        tOutput.Text += h_Interface.Logger("merging lists...\n");
                         System.Windows.Forms.Application.DoEvents();
 
                         /// Work through each old field and add if it doesn't exist in the new list.
@@ -192,9 +199,9 @@ namespace Sleep_Downloader
 
                         for (int i = 0; i < Whitelist.Count; i++)
                         {
-                            for (int m = 0; m < ReportValues.Count; m++)
+                            for (int m = 0; m < Report_Contents.Count; m++)
                             {
-                                if (Whitelist[i].Name == ReportValues[m].Name)
+                                if (Whitelist[i].Name == Report_Contents[m].Name)
                                 {
                                     a++;
                                 }
@@ -202,15 +209,14 @@ namespace Sleep_Downloader
 
                             if (a == 0)
                             {
-                                ReportValues.Add(new Fields()
+                                Report_Contents.Add(new Fields()
                                 {
                                     Name    = Whitelist[i].Name,
                                     Name2   = Whitelist[i].Name2,
                                     Value   = ""
                                 });
 
-                                tOutput.Text += String.Format("{0} - adding new field: {1}\n", DateTime.Now, Whitelist[i].Name);
-
+                                tOutput.Text += h_Interface.Logger(String.Format("adding new field {0}...\n", Whitelist[i].Name));
                                 System.Windows.Forms.Application.DoEvents();
                             }
 
@@ -220,44 +226,48 @@ namespace Sleep_Downloader
                 }
                 catch
                 {
-                    tOutput.Text += String.Format("{0} - ERROR merging fields. Old whitelist not used.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("ERROR merging fields. Old whitelist not used.\n");
                 }
 
-                FieldsNew = new ObservableCollection<Fields>(ReportValues);
+                FieldsNew = new ObservableCollection<Fields>(Report_Contents);
                 cVariablelist_New.ItemsSource = FieldsNew;
 
                 cWhitelist_Update.IsEnabled = true;
 
-                tOutput.Text += String.Format("{0} - fields imported.\n", DateTime.Now);
-                lFields1.Content = String.Format("{0} fields", ReportValues.Count);
+                tOutput.Text += h_Interface.Logger("fields imported.\n");
+                lFields1.Content = String.Format("{0} fields", Report_Contents.Count);
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR importing fields.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR importing fields.\n");
             }
 
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
-                Whitelist WhitelistHandle = new Whitelist();
+                Whitelist h_Whitelist = new Whitelist();
                 FieldsCurrent.Clear();
-                FieldsCurrent = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                FieldsCurrent = new ObservableCollection<Fields>(h_Whitelist.FieldList());
                 cVariablelist_Current.ItemsSource = FieldsCurrent;
 
-                tOutput.Text += String.Format("{0} - refreshing current whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("refreshing current whitelist.\n");
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR refreshing current whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR refreshing current whitelist.\n");
             }
 
         }
 
         private void cWhitelist_Update_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
                 System.IO.FileInfo fi = new System.IO.FileInfo("Whitelist.txt");
@@ -266,27 +276,27 @@ namespace Sleep_Downloader
                     // Move file with a new name. Hence renamed.  
                     try
                     {
-                        tOutput.Text += String.Format("{0} - checking for previous whitelist backup... if yes, delete.\n", DateTime.Now);
+                        tOutput.Text += h_Interface.Logger("checking for previous whitelist backup... if yes, delete.\n");
                         File.Delete("Whitelist.txt.bak");
                     }
                     catch
                     {
-                        tOutput.Text += String.Format("{0} - no backup found.\n", DateTime.Now);
+                        tOutput.Text += h_Interface.Logger("no backup found.\n");
                     }
                     fi.MoveTo("Whitelist.txt.bak");
                 }
 
                 /// Write to new file.
                 /// 
-                List<Fields> ReportValues   = new List<Fields>(FieldsNew);
-                StreamWriter Writer         = new StreamWriter("Whitelist.txt");
-                StringBuilder Builder       = new StringBuilder();
+                List<Fields> Report_Contents    = new List<Fields>(FieldsNew);
+                StreamWriter Writer             = new StreamWriter("Whitelist.txt");
+                StringBuilder Builder           = new StringBuilder();
                 string Line = "";
 
-                for (int i = 0; i < ReportValues.Count; i++)
+                for (int i = 0; i < Report_Contents.Count; i++)
                 {
-                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
-                    if (i < (ReportValues.Count - 1))
+                    Line += String.Format("{0}\t{1}", Report_Contents[i].Name, Report_Contents[i].Name2);
+                    if (i < (Report_Contents.Count - 1))
                     {
                         Line += "\n";
                     }
@@ -298,22 +308,24 @@ namespace Sleep_Downloader
                 Builder.Clear();
                 Writer.Close();
 
-                Whitelist WhitelistHandle           = new Whitelist();
-                FieldsCurrent                       = new ObservableCollection<Fields>(WhitelistHandle.FilterFields());
+                Whitelist h_Whitelist           = new Whitelist();
+                FieldsCurrent                       = new ObservableCollection<Fields>(h_Whitelist.FieldList());
                 cVariablelist_Current.ItemsSource   = FieldsCurrent;
 
                 lFields2.Content = String.Format("{0} fields", cVariablelist_Current.Items.Count);
-                tOutput.Text += String.Format("{0} - whitelist updated, backup created.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("whitelist updated, backup created.\n");
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR updating whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR updating whitelist.\n");
             }
         }
 
         private void cWhitelistCurrent_Update_Click(object sender, RoutedEventArgs e)
         {
-            List<Fields> ReportValues = new List<Fields>(FieldsCurrent);
+            Interface h_Interface = new Interface();
+
+            List<Fields> Report_Contents = new List<Fields>(FieldsCurrent);
 
             try
             {
@@ -321,10 +333,10 @@ namespace Sleep_Downloader
                 StringBuilder Builder   = new StringBuilder();
                 string Line             = "";
 
-                for (int i = 0; i < ReportValues.Count; i++)
+                for (int i = 0; i < Report_Contents.Count; i++)
                 {
-                    Line += String.Format("{0}\t{1}", ReportValues[i].Name, ReportValues[i].Name2);
-                    if (i < (ReportValues.Count - 1))
+                    Line += String.Format("{0}\t{1}", Report_Contents[i].Name, Report_Contents[i].Name2);
+                    if (i < (Report_Contents.Count - 1))
                     {
                         Line += "\n";
                     }
@@ -338,57 +350,60 @@ namespace Sleep_Downloader
 
                 cWhitelist_Update.IsEnabled = true;
 
-                tOutput.Text += String.Format("{0} - whitelist updated.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("whitelist updated.\n");
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR updating whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR updating whitelist.\n");
             }
         }
 
         private void Run_Click(object sender, RoutedEventArgs e)
         {
-            Fetch ArchiveHandle = new Fetch();
-            List<Archives> ArchiveList = new List<Archives>();
+            Interface h_Interface = new Interface();
+            Whitelist h_Whitelist = new Whitelist();
+
+            Fetch h_Archive = new Fetch();
+
+            List<Archives> l_Archive = new List<Archives>();
 
             if (cOutputEnable.IsChecked == false)
             {
-                tOutput.Text += String.Format("{0} - output disbled. Running...\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("output disbled. Running...\n");
             }
 
             /// Get archive list.
             /// 
             try
             {
-                ArchiveList = ArchiveHandle.GetArchives(cFolderPath.Text);
+                l_Archive = h_Archive.GetArchives(cFolderPath.Text);
             }
             catch
             {
                 if (cOutputEnable.IsChecked == true)
                 {
-                    tOutput.Text += String.Format("{0} - ERROR obtaining archive list... stopping.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("ERROR obtaining archive list... stopping.\n");
                     return;
                 }
             }
 
             /// Populate field whitelist.
             /// 
-            Whitelist WhitelistHandle = new Whitelist();
             List<Fields> Whitelist = new List<Fields>();
 
             try
             {
                 if (cOutputEnable.IsChecked == true)
                 {
-                    tOutput.Text += String.Format("{0} - refetching whitelist.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("refetching whitelist.\n");
                 }
-                Whitelist = WhitelistHandle.FilterFields();
+                Whitelist = h_Whitelist.FieldList();
             }
             catch
             {
                 if (cOutputEnable.IsChecked == true)
                 {
-                    tOutput.Text += String.Format("{0} - ERROR applying whitelist... stopping.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("ERROR applying whitelist... stopping.\n");
                 }
                 return;
             }
@@ -420,7 +435,7 @@ namespace Sleep_Downloader
             /// 
             MissingReportBuilder.AppendLine(String.Format("Archive\tStudy"));
 
-            ArchiveList.ForEach(delegate (Archives Archive)
+            l_Archive.ForEach(delegate (Archives Archive)
             {
                 if (Archive.Selected)
                 {
@@ -428,50 +443,50 @@ namespace Sleep_Downloader
                     {
                         if (cOutputEnable.IsChecked == true)
                         {
-                            tOutput.Text += String.Format("{0} - opening archive {1}...\n", DateTime.Now, Archive.Name);
+                            tOutput.Text += h_Interface.Logger("opening archive...\n");
                         }
-                        List<Studies> StudyList = new List<Studies>();
-                        StudyList = ArchiveHandle.GetStudies(cFolderPath.Text, Archive.Name);
+                        List<Studies> l_Study = new List<Studies>();
+                        l_Study = h_Archive.GetStudies(cFolderPath.Text, Archive.Name);
 
                         System.Windows.Forms.Application.DoEvents();
 
                         /// Open study and find report according to filter settings.
-                        StudyList.ForEach(delegate (Studies Study)
+                        l_Study.ForEach(delegate (Studies Study)
                         {
                             try
                             {
                                 if (cOutputEnable.IsChecked == true)
                                 {
-                                    tOutput.Text += String.Format("{0} - opening study {1}...\n", DateTime.Now, Study.Name);
+                                    tOutput.Text += h_Interface.Logger(String.Format("opening study {0}...\n", Study.Name));
                                 }
-                                List<Reports> ReportList = new List<Reports>();
-                                ReportList = ArchiveHandle.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);
+                                List<Reports> l_Report = new List<Reports>();
+                                l_Report = h_Archive.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);
 
                                 System.Windows.Forms.Application.DoEvents();
 
                                 /// Check if report is missing and add to list.
                                 /// 
-                                if (ReportList.Count == 0)
+                                if (l_Report.Count == 0)
                                 {
                                     MissingReportBuilder.AppendLine(String.Format("{0}\t{1}", Archive.Name, Study.Name));
                                     if (cOutputEnable.IsChecked == true)
                                     {
-                                        tOutput.Text += String.Format("{0} - missing report for study {1}, in archive {2}...\n", DateTime.Now, Study.Name, Archive.Name);
+                                        tOutput.Text += h_Interface.Logger(String.Format("missing report for study {0}, in archive {1}...\n", Study.Name, Archive.Name));
                                     }
                                     MissingReportCounter++;
                                 }
 
-                                ReportList.ForEach(delegate (Reports Report)
+                                l_Report.ForEach(delegate (Reports Report)
                                 {
                                     try
                                     {
                                         if (cOutputEnable.IsChecked == true)
                                         {
-                                            tOutput.Text += String.Format("{0} - opening report {1}...\n", DateTime.Now, Report.Name);
+                                            tOutput.Text += h_Interface.Logger(String.Format("opening report {0}...\n", Report.Name));
                                         }
-                                        Stream StreamHandle = new Stream();
-                                        List<Fields> ReportValues = new List<Fields>();
-                                        ReportValues = StreamHandle.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text), Convert.ToInt32(cReportTextValuePost.Text));
+                                        Stream h_Stream = new Stream();
+                                        List<Fields> Report_Contents = new List<Fields>();
+                                        Report_Contents = h_Stream.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text), Convert.ToInt32(cReportTextValuePost.Text));
 
                                         System.Windows.Forms.Application.DoEvents();
 
@@ -485,7 +500,7 @@ namespace Sleep_Downloader
                                             }
                                             if (cOutputEnable.IsChecked == true)
                                             {
-                                                tOutput.Text += String.Format("{0} - writing headers from whitelist...\n", DateTime.Now);
+                                                tOutput.Text += h_Interface.Logger("writing headers from whitelist...\n");
                                             }
                                             Builder.AppendLine(Line);
                                             System.Windows.Forms.Application.DoEvents();
@@ -499,11 +514,11 @@ namespace Sleep_Downloader
                                         for (int i = 0; i < Whitelist.Count; i++)
                                         {
                                             AlignmentFlag = false;
-                                            for (int j = 0; j < ReportValues.Count; j++)
+                                            for (int j = 0; j < Report_Contents.Count; j++)
                                             {
-                                                if (ReportValues[j].Name == Whitelist[i].Name)
+                                                if (Report_Contents[j].Name == Whitelist[i].Name)
                                                 {
-                                                    Line = Line + String.Format("{0}\t", ReportValues[j].Value);
+                                                    Line = Line + String.Format("{0}\t", Report_Contents[j].Value);
                                                     AlignmentFlag = true;
                                                 }
                                             }
@@ -515,7 +530,7 @@ namespace Sleep_Downloader
 
                                         if (cOutputEnable.IsChecked == true)
                                         {
-                                            tOutput.Text += String.Format("{0} - writing values from {1}...\n", DateTime.Now, Report.Name);
+                                            tOutput.Text += h_Interface.Logger(String.Format("writing values from {0}...\n", Report.Name));
                                         }
                                         Builder.AppendLine(Line);
                                         System.Windows.Forms.Application.DoEvents();
@@ -539,7 +554,7 @@ namespace Sleep_Downloader
                                         {
                                             if (cOutputEnable.IsChecked == true)
                                             {
-                                                tOutput.Text += String.Format("{0} - ERROR opening report {1}... skipping...\n", DateTime.Now, Report.Name);
+                                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening report {0}... skipping...\n", Report.Name));
                                             }
                                             ErrorCounter++;
                                             System.Windows.Forms.Application.DoEvents();
@@ -548,7 +563,7 @@ namespace Sleep_Downloader
                                         {
                                             if (cOutputEnable.IsChecked == true)
                                             {
-                                                tOutput.Text += String.Format("{0} - ERROR opening report {1}... stopping.\n", DateTime.Now, Report.Name);
+                                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening report {0}... stopping.\n", Report.Name));
                                             }
                                             ErrorCounter++;
                                             return;
@@ -562,7 +577,7 @@ namespace Sleep_Downloader
                                 {
                                     if (cOutputEnable.IsChecked == true)
                                     {
-                                        tOutput.Text += String.Format("{0} - ERROR opening study {1}... skipping...\n", DateTime.Now, Study.Name);
+                                        tOutput.Text += h_Interface.Logger(String.Format("ERROR opening study {0}... skipping...\n", Study.Name));
                                     }
                                     ErrorCounter++;
                                     System.Windows.Forms.Application.DoEvents();
@@ -571,7 +586,7 @@ namespace Sleep_Downloader
                                 {
                                     if (cOutputEnable.IsChecked == true)
                                     {
-                                        tOutput.Text += String.Format("{0} - ERROR opening study {1}... stopping.\n", DateTime.Now, Study.Name);
+                                        tOutput.Text += h_Interface.Logger(String.Format("ERROR opening study {0}... stopping.\n", Study.Name));
                                     }
                                     ErrorCounter++;
                                     return;
@@ -585,7 +600,7 @@ namespace Sleep_Downloader
                         {
                             if (cOutputEnable.IsChecked == true)
                             {
-                                tOutput.Text += String.Format("{0} - ERROR opening archive {1}... skipping...\n", DateTime.Now, Archive.Name);
+                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening archive {0}... skipping...\n", Archive.Name));
                             }
                             ErrorCounter++;
                             System.Windows.Forms.Application.DoEvents();
@@ -594,7 +609,7 @@ namespace Sleep_Downloader
                         {
                             if (cOutputEnable.IsChecked == true)
                             {
-                                tOutput.Text += String.Format("{0} - ERROR opening archive {1}... stopping.\n", DateTime.Now, Archive.Name);
+                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening archive {0}... skipping...\n", Archive.Name));
                             }
                             ErrorCounter++;
                             return;
@@ -613,12 +628,12 @@ namespace Sleep_Downloader
                     LogWriter.Write(LogBuilder);
                     LogWriter.Flush();
                     LogBuilder.Clear();
-                    tOutput.Text += String.Format("{0} - output log written.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("output log written.\n");
 
                 }
                 catch
                 {
-                    tOutput.Text += String.Format("{0} - ERROR writing output log.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("ERROR writing output log.\n");
                 }
             }
 
@@ -631,12 +646,12 @@ namespace Sleep_Downloader
                     MissingReportWriter.Write(MissingReportBuilder);
                     MissingReportWriter.Flush();
                     MissingReportBuilder.Clear();
-                    tOutput.Text += String.Format("{0} - missing reports log written.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("missing reports log written.\n");
 
                 }
                 catch
                 {
-                    tOutput.Text += String.Format("{0} - ERROR writing missing reports log.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("ERROR writing missing reports log.\n");
                 }
             }
 
@@ -645,11 +660,13 @@ namespace Sleep_Downloader
             Writer.Close();
             LogWriter.Close();
             MissingReportWriter.Close();
-            tOutput.Text += String.Format("{0} - finished.\n", DateTime.Now);
+            tOutput.Text += h_Interface.Logger("finished.\n");
         }
 
         private void bNewUp_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
                 if (cVariablelist_New.SelectedIndex >= 0)
@@ -670,23 +687,25 @@ namespace Sleep_Downloader
                     FieldsNew[j].Name2  = TempName2;
                     FieldsNew[j].Value  = TempValue;
 
-                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("field moved.\n");
 
                     cVariablelist_New.SelectedIndex = j;
                 }
                 else
                 {
-                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("select field to move.\n");
                 }
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR re-ordering new whitelist.\n");
             }
         }
 
         private void bNewDown_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
                 if (cVariablelist_New.SelectedIndex >= 0)
@@ -707,23 +726,25 @@ namespace Sleep_Downloader
                     FieldsNew[j].Name2  = TempName2;
                     FieldsNew[j].Value  = TempValue;
 
-                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("field moved.\n");
 
                     cVariablelist_New.SelectedIndex = j;
                 }
                 else
                 {
-                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("select field to move.\n");
                 }
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR re-ordering new whitelist.\n");
             }
         }
 
         private void bCurrentUp_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
                 if (cVariablelist_Current.SelectedIndex >= 0)
@@ -744,23 +765,25 @@ namespace Sleep_Downloader
                     FieldsCurrent[j].Name2  = TempName2;
                     FieldsCurrent[j].Value  = TempValue;
 
-                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("field moved.\n");
 
                     cVariablelist_Current.SelectedIndex = j;
                 }
                 else
                 {
-                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("select field to move.\n");
                 }
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR re-ordering new whitelist.\n");
             }
         }
 
         private void bCurrentDown_Click(object sender, RoutedEventArgs e)
         {
+            Interface h_Interface = new Interface();
+
             try
             {
                 if (cVariablelist_Current.SelectedIndex >= 0)
@@ -781,18 +804,18 @@ namespace Sleep_Downloader
                     FieldsCurrent[j].Name2  = TempName2;
                     FieldsCurrent[j].Value  = TempValue;
 
-                    tOutput.Text += String.Format("{0} - field moved.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("field moved.\n");
 
                     cVariablelist_Current.SelectedIndex = j;
                 }
                 else
                 {
-                    tOutput.Text += String.Format("{0} - select field to move.\n", DateTime.Now);
+                    tOutput.Text += h_Interface.Logger("select field to move.\n");
                 }
             }
             catch
             {
-                tOutput.Text += String.Format("{0} - ERROR re-ordering new whitelist.\n", DateTime.Now);
+                tOutput.Text += h_Interface.Logger("ERROR re-ordering new whitelist.\n");
             }
         }
     }

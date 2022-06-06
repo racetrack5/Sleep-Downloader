@@ -14,13 +14,13 @@ namespace Sleep_Downloader
             /// 
             Report.LoadFromFile(ReportFile);
 
-            List<Fields> ReportValues = new List<Fields>();
+            List<Fields> Report_Contents = new List<Fields>();
 
             /// Get field names from report.
             ///
             for (int i = 0; i < Report.Variables.Count; i++)
             {
-                ReportValues.Add(new Fields()
+                Report_Contents.Add(new Fields()
                 {
                     Name = Report.Variables.GetNameByIndex(i),
                     Value = Report.Variables.GetValueByIndex(i)
@@ -28,16 +28,16 @@ namespace Sleep_Downloader
 
                 /// Remove blanks to avoid weirdness.
                 /// 
-                if (ReportValues[i].Value == "")
+                if (Report_Contents[i].Value == "")
                 {
-                    ReportValues[i].Value = "-";
+                    Report_Contents[i].Value = "-";
                 }
 
                 /// Remove tabs, returns, new lines or excessive spaces that will act as delimiters or otherwise change the output.
                 /// 
                 Regex rgx = new Regex("\t|\r|\n|\\s+");
-                string Result = rgx.Replace(ReportValues[i].Value, " ");
-                ReportValues[i].Value = Result;
+                string Result = rgx.Replace(Report_Contents[i].Value, " ");
+                Report_Contents[i].Value = Result;
 
             }
 
@@ -46,9 +46,9 @@ namespace Sleep_Downloader
             int j = 0;
             int l = -1;
 
-            for (int i = 0; i < ReportValues.Count; i++)
+            for (int i = 0; i < Report_Contents.Count; i++)
             {
-                if (ReportValues[i].Name.StartsWith("_"))
+                if (Report_Contents[i].Name.StartsWith("_"))
                 {
                     j++;
                     if (l < 0)
@@ -60,7 +60,7 @@ namespace Sleep_Downloader
                 {
                     if (j > 0)
                     {
-                        ReportValues.RemoveRange(l, j);
+                        Report_Contents.RemoveRange(l, j);
                         j = 0;
                         l = -1;
                     }
@@ -90,7 +90,7 @@ namespace Sleep_Downloader
 
             /// Add report text as an extra field.
             /// 
-            ReportValues.Add(new Fields()
+            Report_Contents.Add(new Fields()
             {
                 Name = "ReportText",
                 Value = ReportText
@@ -98,7 +98,7 @@ namespace Sleep_Downloader
 
             /// Add path as an extra field.
             /// 
-            ReportValues.Add(new Fields()
+            Report_Contents.Add(new Fields()
             {
                 Name = "Path",
                 Value = ReportFile
@@ -114,14 +114,14 @@ namespace Sleep_Downloader
             {
                 /// Find the report field to match the whitelist field.
                 /// 
-                for (int k = 0; k < ReportValues.Count; k++)
+                for (int k = 0; k < Report_Contents.Count; k++)
                 {
-                    if (Whitelist[i].Name == ReportValues[k].Name)
+                    if (Whitelist[i].Name == Report_Contents[k].Name)
                     {
                         WriteValues.Add(new Fields()
                         {
-                            Name = ReportValues[k].Name,
-                            Value = ReportValues[k].Value
+                            Name = Report_Contents[k].Name,
+                            Value = Report_Contents[k].Value
                         });
                     }
                 }
