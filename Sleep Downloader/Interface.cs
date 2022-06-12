@@ -1,11 +1,4 @@
-﻿using Spire.Doc;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Text;
-using System.Windows;
-using System.Windows.Forms;
+﻿using System;
 
 namespace Sleep_Downloader
 {

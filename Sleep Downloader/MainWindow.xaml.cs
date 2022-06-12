@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -14,10 +16,114 @@ namespace Sleep_Downloader
     /// </summary>
     public partial class MainWindow : Window
     {
-        /// Collections to interact with.
-        /// 
+        // Collections to interact with.
         public ObservableCollection<Fields> FieldsNew;
         public ObservableCollection<Fields> FieldsCurrent;
+
+        // Worker (thread). Seperate from UI thread and other workers.
+        private string Worker(Archives Archive, List<Fields> Whitelist, string FolderPath, int RepeatCheck)
+        {
+            Interface h_Interface = new Interface();
+            Whitelist h_Whitelist = new Whitelist();
+            Fetch h_Archive = new Fetch();
+
+            List<Studies> l_Study = new List<Studies>();
+            l_Study = h_Archive.GetStudies(FolderPath, Archive.Name);
+
+            // Variables.
+            string Line = "";
+            double Counter = 0;
+            bool AlignmentFlag = false; /// Used to align whitelist and extracted report values.
+
+            try
+            {
+                if (cOutputEnable.IsChecked == true)
+                {
+                    tOutput.Text += h_Interface.Logger("opening archive...\n");
+                }
+                l_Study = h_Archive.GetStudies(cFolderPath.Text, Archive.Name);
+
+                System.Windows.Forms.Application.DoEvents();
+
+                /// Open study and find report according to filter settings.
+                l_Study.ForEach(delegate (Studies Study)
+                {
+                    try
+                    {
+                        if (cOutputEnable.IsChecked == true)
+                        {
+                            tOutput.Text += h_Interface.Logger(String.Format("opening study {0}...\n", Study.Name));
+                        }
+                        List<Reports> l_Report = new List<Reports>();
+                        l_Report = h_Archive.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);             
+
+                        l_Report.ForEach(delegate (Reports Report)
+                        {
+                            try
+                            {
+                                if (cOutputEnable.IsChecked == true)
+                                {
+                                    tOutput.Text += h_Interface.Logger(String.Format("opening report {0}...\n", Report.Name));
+                                }
+                                Stream h_Stream = new Stream();
+                                List<Fields> Report_Contents = new List<Fields>();
+                                Report_Contents = h_Stream.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text), Convert.ToInt32(cReportTextValuePost.Text));
+
+                                System.Windows.Forms.Application.DoEvents();
+
+                                if (Counter == 0)
+                                {
+                                    /// Write headers from whitelist (sets structure of output).
+                                    /// 
+                                    for (int j = 0; j < Whitelist.Count; j++)
+                                    {
+                                        Line += String.Format("{0}\t", Whitelist[j].Name2);
+                                    }
+                                    Line += "";
+                                }
+
+                                /// Ready for next line.
+                                Line = "";
+
+                                /// Write field values.
+                                /// 
+                                for (int i = 0; i < Whitelist.Count; i++)
+                                {
+                                    AlignmentFlag = false;
+                                    for (int j = 0; j < Report_Contents.Count; j++)
+                                    {
+                                        if (Report_Contents[j].Name == Whitelist[i].Name)
+                                        {
+                                            Line += String.Format("{0}\t", Report_Contents[j].Value);
+                                            AlignmentFlag = true;
+                                        }
+                                    }
+                                    if (AlignmentFlag == false)
+                                    {
+                                        Line = Line + "-\t";
+                                    }
+                                }
+                                Line += "\n";
+                            }
+                            catch
+                            {
+ 
+                            }
+                        });
+                    }
+                    catch
+                    {
+
+                    }
+                });
+            }
+            catch
+            {
+               
+            }
+
+            return Line;
+        }
 
         public MainWindow()
         {
@@ -27,8 +133,7 @@ namespace Sleep_Downloader
 
             tOutput.Text += h_Interface.Logger("Sleep Downloader version 1.4.0\n");
 
-            /// Populate current whitelist in setup tab.
-            /// 
+            // Populate current whitelist in setup tab.
             Whitelist h_Whitelist = new Whitelist();
 
             try
@@ -117,12 +222,10 @@ namespace Sleep_Downloader
                     {
                         Document Report = new Document();
 
-                        /// Load the report.
-                        /// 
+                        // Load the report.
                         Report.LoadFromFile(Dialog.FileName);
 
-                        /// Get field names from report.
-                        ///
+                        // Get field names from report.
                         for (int i = 0; i < Report.Variables.Count; i++)
                         {
                             Report_Contents.Add(new Fields()
@@ -135,8 +238,7 @@ namespace Sleep_Downloader
                     }
                 }
 
-                /// Remove empty variables beginning with _.
-                /// 
+                // Remove empty variables beginning with _.
                 int j = 0;
                 int k = -1;
 
@@ -161,8 +263,7 @@ namespace Sleep_Downloader
                     }
                 }
 
-                /// Add report text as an extra field.
-                /// 
+                // Add report text as an extra field.
                 Report_Contents.Add(new Fields()
                 {
                     Name    = "ReportText",
@@ -170,8 +271,7 @@ namespace Sleep_Downloader
                     Value   = ""
                 });
 
-                /// Add path as an extra field.
-                /// 
+                // Add path as an extra field.
                 Report_Contents.Add(new Fields()
                 {
                     Name    = "Path",
@@ -179,8 +279,7 @@ namespace Sleep_Downloader
                     Value   = ""
                 });
 
-                /// Add new variables to current list (if option selected).
-                /// 
+                // Add new variables to current list (if option selected).
                 try
                 {
                     if (cUpdateOption.IsChecked == true)
@@ -193,8 +292,7 @@ namespace Sleep_Downloader
                         tOutput.Text += h_Interface.Logger("merging lists...\n");
                         System.Windows.Forms.Application.DoEvents();
 
-                        /// Work through each old field and add if it doesn't exist in the new list.
-                        ///
+                        // Work through each old field and add if it doesn't exist in the new list.
                         int a = 0;
 
                         for (int i = 0; i < Whitelist.Count; i++)
@@ -286,8 +384,7 @@ namespace Sleep_Downloader
                     fi.MoveTo("Whitelist.txt.bak");
                 }
 
-                /// Write to new file.
-                /// 
+                // Write to new file.
                 List<Fields> Report_Contents    = new List<Fields>(FieldsNew);
                 StreamWriter Writer             = new StreamWriter("Whitelist.txt");
                 StringBuilder Builder           = new StringBuilder();
@@ -335,7 +432,7 @@ namespace Sleep_Downloader
 
                 for (int i = 0; i < Report_Contents.Count; i++)
                 {
-                    Line += String.Format("{0}\t{1}", Report_Contents[i].Name, Report_Contents[i].Name2);
+                    Line += String.Format("{0}\t{1}", Report_Contents[i].Name, Report_Contents[i].Name2, 1);
                     if (i < (Report_Contents.Count - 1))
                     {
                         Line += "\n";
@@ -372,8 +469,7 @@ namespace Sleep_Downloader
                 tOutput.Text += h_Interface.Logger("output disbled. Running...\n");
             }
 
-            /// Get archive list.
-            /// 
+            // Get archive list.
             try
             {
                 l_Archive = h_Archive.GetArchives(cFolderPath.Text);
@@ -387,8 +483,7 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Populate field whitelist.
-            /// 
+            // Populate field whitelist.
             List<Fields> Whitelist = new List<Fields>();
 
             try
@@ -412,254 +507,39 @@ namespace Sleep_Downloader
             /// 
             String OutputFile                   = String.Format(@"Output\{0}", cFileName.Text);
             StreamWriter Writer                 = new StreamWriter(OutputFile);
-            StreamWriter LogWriter              = new StreamWriter(String.Format(@"Output\Log.txt"));
-            StreamWriter MissingReportWriter    = new StreamWriter(String.Format(@"Output\Missing Reports.txt"));
             StringBuilder Builder               = new StringBuilder();
-            StringBuilder LogBuilder            = new StringBuilder();
-            StringBuilder MissingReportBuilder  = new StringBuilder();
 
-            /// Variables to be used later.
-            /// 
-            int RepeatCheck = 0;
-            if (cFilterCheck.IsChecked == true)
-            {
-                RepeatCheck = 1;
-            }
-            string Line                 = "";
-            double Counter              = 0;
-            double ErrorCounter         = 0;
-            double MissingReportCounter = 0;
-            bool AlignmentFlag = false; /// Used to align whitelist and extracted report values.
 
-            /// Format missing report log.
-            /// 
-            MissingReportBuilder.AppendLine(String.Format("Archive\tStudy"));
+            string FolderPath = cFolderPath.Text;
+            string Build = "";
 
             l_Archive.ForEach(delegate (Archives Archive)
             {
                 if (Archive.Selected)
                 {
-                    try
+                    tOutput.Text += h_Interface.Logger(String.Format("Creating worker thread for archive {0}...\n", Archive.Name));
+
+                    Thread tWorker = new Thread(() =>
                     {
-                        if (cOutputEnable.IsChecked == true)
-                        {
-                            tOutput.Text += h_Interface.Logger("opening archive...\n");
-                        }
-                        List<Studies> l_Study = new List<Studies>();
-                        l_Study = h_Archive.GetStudies(cFolderPath.Text, Archive.Name);
+                        Build += Worker(Archive, Whitelist, FolderPath, 1);
+                    });
 
-                        System.Windows.Forms.Application.DoEvents();
-
-                        /// Open study and find report according to filter settings.
-                        l_Study.ForEach(delegate (Studies Study)
-                        {
-                            try
-                            {
-                                if (cOutputEnable.IsChecked == true)
-                                {
-                                    tOutput.Text += h_Interface.Logger(String.Format("opening study {0}...\n", Study.Name));
-                                }
-                                List<Reports> l_Report = new List<Reports>();
-                                l_Report = h_Archive.GetReports(cFolderPath.Text, Archive.Name, Study.Name, cSelect.Text, cFilter.Text, RepeatCheck);
-
-                                System.Windows.Forms.Application.DoEvents();
-
-                                /// Check if report is missing and add to list.
-                                /// 
-                                if (l_Report.Count == 0)
-                                {
-                                    MissingReportBuilder.AppendLine(String.Format("{0}\t{1}", Archive.Name, Study.Name));
-                                    if (cOutputEnable.IsChecked == true)
-                                    {
-                                        tOutput.Text += h_Interface.Logger(String.Format("missing report for study {0}, in archive {1}...\n", Study.Name, Archive.Name));
-                                    }
-                                    MissingReportCounter++;
-                                }
-
-                                l_Report.ForEach(delegate (Reports Report)
-                                {
-                                    try
-                                    {
-                                        if (cOutputEnable.IsChecked == true)
-                                        {
-                                            tOutput.Text += h_Interface.Logger(String.Format("opening report {0}...\n", Report.Name));
-                                        }
-                                        Stream h_Stream = new Stream();
-                                        List<Fields> Report_Contents = new List<Fields>();
-                                        Report_Contents = h_Stream.GetReport(Report.Name, Whitelist, Convert.ToInt32(cReportTextValue.Text), Convert.ToInt32(cReportTextValuePost.Text));
-
-                                        System.Windows.Forms.Application.DoEvents();
-
-                                        if (Counter == 0)
-                                        {
-                                            /// Write headers from whitelist (sets structure of output).
-                                            /// 
-                                            for (int j = 0; j < Whitelist.Count; j++)
-                                            {
-                                                Line = Line + String.Format("{0}\t", Whitelist[j].Name2);
-                                            }
-                                            if (cOutputEnable.IsChecked == true)
-                                            {
-                                                tOutput.Text += h_Interface.Logger("writing headers from whitelist...\n");
-                                            }
-                                            Builder.AppendLine(Line);
-                                            System.Windows.Forms.Application.DoEvents();
-                                        }
-
-                                        /// Ready for next line.
-                                        Line = "";
-
-                                        /// Write field values.
-                                        /// 
-                                        for (int i = 0; i < Whitelist.Count; i++)
-                                        {
-                                            AlignmentFlag = false;
-                                            for (int j = 0; j < Report_Contents.Count; j++)
-                                            {
-                                                if (Report_Contents[j].Name == Whitelist[i].Name)
-                                                {
-                                                    Line = Line + String.Format("{0}\t", Report_Contents[j].Value);
-                                                    AlignmentFlag = true;
-                                                }
-                                            }
-                                            if (AlignmentFlag == false)
-                                            {
-                                                Line = Line + "-\t";
-                                            }
-                                        }
-
-                                        if (cOutputEnable.IsChecked == true)
-                                        {
-                                            tOutput.Text += h_Interface.Logger(String.Format("writing values from {0}...\n", Report.Name));
-                                        }
-                                        Builder.AppendLine(Line);
-                                        System.Windows.Forms.Application.DoEvents();
-
-                                        Line = "";
-
-                                        Counter++;
-                                        lCount.Content = String.Format("{0} reports imported, {1} reports skipped due to errors, {2} missing reports", Counter, ErrorCounter, MissingReportCounter);
-
-                                        ///Write and clear buffer.
-                                        ///
-                                        Writer.Write(Builder);
-                                        Writer.Flush();
-                                        Builder.Clear();
-
-                                        System.Windows.Forms.Application.DoEvents();
-                                    }
-                                    catch
-                                    {
-                                        if (cSkip.IsChecked == true)
-                                        {
-                                            if (cOutputEnable.IsChecked == true)
-                                            {
-                                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening report {0}... skipping...\n", Report.Name));
-                                            }
-                                            ErrorCounter++;
-                                            System.Windows.Forms.Application.DoEvents();
-                                        }
-                                        else
-                                        {
-                                            if (cOutputEnable.IsChecked == true)
-                                            {
-                                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening report {0}... stopping.\n", Report.Name));
-                                            }
-                                            ErrorCounter++;
-                                            return;
-                                        }
-                                    }
-                                });
-                            }
-                            catch
-                            {
-                                if (cSkip.IsChecked == true)
-                                {
-                                    if (cOutputEnable.IsChecked == true)
-                                    {
-                                        tOutput.Text += h_Interface.Logger(String.Format("ERROR opening study {0}... skipping...\n", Study.Name));
-                                    }
-                                    ErrorCounter++;
-                                    System.Windows.Forms.Application.DoEvents();
-                                }
-                                else
-                                {
-                                    if (cOutputEnable.IsChecked == true)
-                                    {
-                                        tOutput.Text += h_Interface.Logger(String.Format("ERROR opening study {0}... stopping.\n", Study.Name));
-                                    }
-                                    ErrorCounter++;
-                                    return;
-                                }
-                            }
-                        });
-                    }
-                    catch
-                    {
-                        if (cSkip.IsChecked == true)
-                        {
-                            if (cOutputEnable.IsChecked == true)
-                            {
-                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening archive {0}... skipping...\n", Archive.Name));
-                            }
-                            ErrorCounter++;
-                            System.Windows.Forms.Application.DoEvents();
-                        }
-                        else
-                        {
-                            if (cOutputEnable.IsChecked == true)
-                            {
-                                tOutput.Text += h_Interface.Logger(String.Format("ERROR opening archive {0}... skipping...\n", Archive.Name));
-                            }
-                            ErrorCounter++;
-                            return;
-                        }
-                    }
+                    tWorker.Start();
                 }
             });
 
-            /// Write log file if option checked.
-            /// 
-            if (cOutputLog.IsChecked == true)
-            {
-                try
-                {
-                    LogBuilder.Append(tOutput.Text);
-                    LogWriter.Write(LogBuilder);
-                    LogWriter.Flush();
-                    LogBuilder.Clear();
-                    tOutput.Text += h_Interface.Logger("output log written.\n");
+            Builder.AppendLine(Build);
 
-                }
-                catch
-                {
-                    tOutput.Text += h_Interface.Logger("ERROR writing output log.\n");
-                }
-            }
+            ///Write and clear buffer.
+            ///
+            Writer.Write(Builder);
+            Writer.Flush();
+            Builder.Clear();
 
-            /// Write missing reports list if checked.
-            /// 
-            if (cMissingReports.IsChecked == true)
-            {
-                try
-                {
-                    MissingReportWriter.Write(MissingReportBuilder);
-                    MissingReportWriter.Flush();
-                    MissingReportBuilder.Clear();
-                    tOutput.Text += h_Interface.Logger("missing reports log written.\n");
-
-                }
-                catch
-                {
-                    tOutput.Text += h_Interface.Logger("ERROR writing missing reports log.\n");
-                }
-            }
 
             /// Finish and close files.
             /// 
             Writer.Close();
-            LogWriter.Close();
-            MissingReportWriter.Close();
             tOutput.Text += h_Interface.Logger("finished.\n");
         }
 
