@@ -10,14 +10,12 @@ namespace Sleep_Downloader
         {
             Document Report = new Document();
 
-            /// Load the report.
-            /// 
+            // Load the report.
             Report.LoadFromFile(ReportFile);
 
             List<Fields> Report_Contents = new List<Fields>();
 
-            /// Get field names from report.
-            ///
+            // Get field names from report.
             for (int i = 0; i < Report.Variables.Count; i++)
             {
                 Report_Contents.Add(new Fields()
@@ -26,23 +24,20 @@ namespace Sleep_Downloader
                     Value = Report.Variables.GetValueByIndex(i)
                 });
 
-                /// Remove blanks to avoid weirdness.
-                /// 
+                // Remove blanks to avoid weirdness.
                 if (Report_Contents[i].Value == "")
                 {
                     Report_Contents[i].Value = "-";
                 }
 
-                /// Remove tabs, returns, new lines or excessive spaces that will act as delimiters or otherwise change the output.
-                /// 
+                // Remove tabs, returns, new lines or excessive spaces that will act as delimiters or otherwise change the output.
                 Regex rgx = new Regex("\t|\r|\n|\\s+");
                 string Result = rgx.Replace(Report_Contents[i].Value, " ");
                 Report_Contents[i].Value = Result;
 
             }
 
-            /// Remove empty variables beginning with _.
-            /// 
+            // Remove empty variables beginning with _.
             int j = 0;
             int l = -1;
 
@@ -67,17 +62,14 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Retrieve report text.
-            /// 
+            // Retrieve report text. 
             string ReportText = Report.GetText();
 
-            /// Cull report to "Max CO2" - only reliable marker in different report versions.
-            /// 
+            // Cull report to "Max CO2" - only reliable marker in different report versions.
             ReportText = ReportText.Substring(ReportText.IndexOf("Max CO2"));
 
 
-            /// Cull report a few chars after "Consultant" for service planning.
-            /// 
+            // Cull report a few chars after "Consultant" for service planning.
             int index = ReportText.IndexOf("Consultant");
             if (index >= i_PostCull)
             {
@@ -88,32 +80,27 @@ namespace Sleep_Downloader
             string Result2 = rgx2.Replace(ReportText, " ");
             ReportText = Result2;
 
-            /// Add report text as an extra field.
-            /// 
+            // Add report text as an extra field.
             Report_Contents.Add(new Fields()
             {
                 Name = "ReportText",
                 Value = ReportText
             });
 
-            /// Add path as an extra field.
-            /// 
+            // Add path as an extra field.
             Report_Contents.Add(new Fields()
             {
                 Name = "Path",
                 Value = ReportFile
             });
 
-            /// Align whitelist with report fields (so the program is not sensitive to report changes) into a seperate list to write back.
-            /// 
+            // Align whitelist with report fields (so the program is not sensitive to report changes) into a seperate list to write back.
             List<Fields> WriteValues = new List<Fields>();
 
-            /// Grab field from whitelist.
-            /// 
+            // Grab field from whitelist.
             for (int i = 0; i < Whitelist.Count; i++)
             {
-                /// Find the report field to match the whitelist field.
-                /// 
+                // Find the report field to match the whitelist field.
                 for (int k = 0; k < Report_Contents.Count; k++)
                 {
                     if (Whitelist[i].Name == Report_Contents[k].Name)
@@ -127,8 +114,7 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Cull duplicate fields (appears to happen with the name field). Culls forwards, not backwards.
-            /// 
+            // Cull duplicate fields (appears to happen with the name field). Culls forwards, not backwards.
             for (int i = 0; i < WriteValues.Count; i++)
             {
                 for (int k = i + 1; k < WriteValues.Count; k++)

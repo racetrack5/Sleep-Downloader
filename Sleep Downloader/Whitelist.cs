@@ -12,8 +12,7 @@ namespace Sleep_Downloader
             StreamReader File = new StreamReader(s_File);
             string Line;
 
-            /// Get whitelisted fields.
-            ///
+            // Get whitelisted fields.
             while ((Line = File.ReadLine()) != null)
             {
                 var parts = Line.Split('\t');
@@ -34,8 +33,7 @@ namespace Sleep_Downloader
             StreamReader File = new StreamReader(FilePath);
             string Line;
 
-            /// Get whitelisted fields.
-            ///
+            // Get whitelisted fields.
             while ((Line = File.ReadLine()) != null)
             {
                 var parts = Line.Split('\t');

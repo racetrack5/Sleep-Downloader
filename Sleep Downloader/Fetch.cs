@@ -10,8 +10,7 @@ namespace Sleep_Downloader
         {
             List<Reports> l_Report = new List<Reports>();
 
-            /// Search for folders in selected path.
-            /// 
+            // Search for folders in selected path.
             string JoinedPath = String.Format(@"{0}\{1}\{2}\", SelectedFolder, Archive, Study);
             string[] Files = Directory.GetFiles(JoinedPath, Filter, SearchOption.TopDirectoryOnly);
 
@@ -31,8 +30,7 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Double back if option selected and no report found.
-            /// 
+            // Double back if option selected and no report found.
             if (Repeat)
             {
                 l_Report.RemoveRange(0, l_Report.Count); /// Clear the list.
@@ -46,8 +44,7 @@ namespace Sleep_Downloader
                 }
             }
 
-            /// Catch "hidden files" that Windows and other OS' leave around.
-            /// 
+            // Catch "hidden files" that Windows and other OS' leave around.
             for (int i = 0; i < l_Report.Count; i++)
             {
                 if (l_Report[i].Name.Contains(@"$"))
@@ -63,8 +60,7 @@ namespace Sleep_Downloader
         {
             List<Studies> l_Study = new List<Studies>();
 
-            /// Search for folders in selected path.
-            /// 
+            // Search for folders in selected path.
             string JoinedPath = String.Format(@"{0}\{1}", SelectedFolder, Archive);
             string[] Folders = Directory.GetDirectories(JoinedPath, "*", SearchOption.TopDirectoryOnly);
 
@@ -76,8 +72,7 @@ namespace Sleep_Downloader
                 });
             }
 
-            /// Remove JoinedPath somehow being included in this string.
-            ///
+            // Remove JoinedPath somehow being included in this string.
             JoinedPath += @"\";
             for (int i = 0; i < l_Study.Count; i++)
             {
@@ -93,8 +88,7 @@ namespace Sleep_Downloader
         {
             List<Archives> l_Archive = new List<Archives>();
 
-            /// Search for folders in selected path.
-            /// 
+            // Search for folders in selected path.
             string[] Folders = Directory.GetDirectories(SelectedFolder, "*", SearchOption.TopDirectoryOnly);
 
             foreach (string Folder in Folders)
@@ -102,12 +96,11 @@ namespace Sleep_Downloader
                 l_Archive.Add(new Archives()
                 {
                     Name = Folder,
-                    Selected = true /// Selected by default.
+                    Selected = true // Selected by default.
                 });
             }
 
-            /// Remove path from archive name for easier reading.
-            /// 
+            // Remove path from archive name for easier reading.
             SelectedFolder += @"\";
             for (int i = 0; i < l_Archive.Count; i++)
             {

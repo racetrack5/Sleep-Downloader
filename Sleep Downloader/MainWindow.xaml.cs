@@ -10,10 +10,6 @@ using System.Windows.Forms;
 
 namespace Sleep_Downloader
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class MainWindow : Window
     {
         // Lists globally accessible.
@@ -62,7 +58,7 @@ namespace Sleep_Downloader
 
         private void Tracker(string Message)
         {
-            string Output = Message;
+            string Output = String.Format("{0} - {1}\n", DateTime.Now, Message);
 
             // Update component on UI thread.
             this.Dispatcher.Invoke(() =>
@@ -86,11 +82,8 @@ namespace Sleep_Downloader
             }
             catch
             {
-                if (Output)
-                {
-                    Logger("ERROR obtaining archive list... stopping.");
-                    return;
-                }
+                Logger("ERROR obtaining archive list... stopping.");
+                return;
             }
 
             // Populate field whitelist.
@@ -106,10 +99,7 @@ namespace Sleep_Downloader
             }
             catch
             {
-                if (Output)
-                {
-                    Logger("ERROR applying whitelist... stopping.");
-                }
+                Logger("ERROR applying whitelist... stopping.");
                 return;
             }
 
