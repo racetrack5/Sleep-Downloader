@@ -40,7 +40,7 @@
                     <CheckBox x:Name="cSkip" Content="On error, continue to next report" HorizontalAlignment="Left" Height="20" Margin="300,170,0,0" VerticalAlignment="Top" Width="217" IsChecked="True" IsEnabled="False"/>
                     <TextBox x:Name="cFileName" HorizontalAlignment="Left" Height="30" Margin="156,456,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241" Text="Output.txt"/>
                     <Label Content="Options:" HorizontalAlignment="Left" Height="30" Margin="290,102,0,0" VerticalAlignment="Top" Width="135"/>
-                    <CheckBox x:Name="cOutputLog" Content="Export output log" HorizontalAlignment="Left" Height="20" Margin="300,195,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
+                    <CheckBox x:Name="cOutputLog" Content="Export output log" HorizontalAlignment="Left" Height="20" Margin="300,195,0,0" VerticalAlignment="Top" Width="217" IsEnabled="False"/>
                     <CheckBox x:Name="cMissingReports" Content="Export list of missing reports" HorizontalAlignment="Left" Height="20" Margin="300,220,0,0" VerticalAlignment="Top" Width="217" IsChecked="True"/>
                     <CheckBox x:Name="cFilterCheck" Content="Try again without filter if missing report" HorizontalAlignment="Left" Height="19" Margin="300,245,0,0" VerticalAlignment="Top" Width="229" IsChecked="True"/>
                     <Label Content="Report pre text culling value:" HorizontalAlignment="Left" Height="29" Margin="298,264,0,0" VerticalAlignment="Top" Width="186"/>
@@ -54,14 +54,14 @@
                 <Grid>
                     <Label Content="Select a report to generate a new whitelist:" HorizontalAlignment="Left" Margin="10,20,0,0" Height="30" Width="379" VerticalAlignment="Top"/>
                     <Button x:Name="cSelectWhitelist" Content="Select" HorizontalAlignment="Left" Height="35" Margin="440,25,0,0" VerticalAlignment="Top" Width="100" Click="SelectWhitelist_Click"/>
-                    <DataGrid x:Name="cVariablelist_New" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="20,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
+                    <DataGrid x:Name="cVars_New" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="20,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
                         <DataGrid.Columns>
                             <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="115" IsReadOnly="True"/>
                             <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="115" IsReadOnly="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button x:Name="cWhitelist_Update" Content="Overwite" HorizontalAlignment="Left" Height="34" Margin="148,500,0,0" VerticalAlignment="Top" Width="122" RenderTransformOrigin="0.506,0.959" Click="cWhitelist_Update_Click" IsEnabled="False"/>
-                    <DataGrid x:Name="cVariablelist_Current" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="290,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
+                    <DataGrid x:Name="cVars_Current" HorizontalAlignment="Left" Height="350" VerticalAlignment="Top" Width="250" AutoGenerateColumns="False" Margin="290,138,0,0" CanUserAddRows="False" CanUserDeleteRows="False" FontSize="8">
                         <DataGrid.Columns>
                             <DataGridTextColumn CanUserSort="False" Header="Variable" Binding="{Binding Name, Mode=TwoWay}" Width="115" IsReadOnly="True"/>
                             <DataGridTextColumn CanUserSort="False" Header="Heading" Binding="{Binding Name2, Mode=TwoWay}" Width="115" IsReadOnly="False"/>

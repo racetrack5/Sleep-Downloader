@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+
 namespace Sleep_Downloader
 {
     class Whitelist
     {
-        public List<Fields> FieldList()
+        public List<Fields> FieldList(string s_File)
         {
             List<Fields> Whitelist = new List<Fields>();
 
-            StreamReader File = new StreamReader(@"Whitelist.txt");
+            StreamReader File = new StreamReader(s_File);
             string Line;
 
             /// Get whitelisted fields.

@@ -6,7 +6,7 @@ namespace Sleep_Downloader
 {
     class Fetch
     {
-        public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2, int RepeatCheck)
+        public List<Reports> GetReports(string SelectedFolder, string Archive, string Study, string Filter, string Filter2, bool Repeat)
         {
             List<Reports> l_Report = new List<Reports>();
 
@@ -33,7 +33,7 @@ namespace Sleep_Downloader
 
             /// Double back if option selected and no report found.
             /// 
-            if (RepeatCheck == 1)
+            if (Repeat)
             {
                 l_Report.RemoveRange(0, l_Report.Count); /// Clear the list.
                 Files = Directory.GetFiles(JoinedPath, Filter, SearchOption.TopDirectoryOnly);

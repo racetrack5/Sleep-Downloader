@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace Sleep_Downloader
 {
-    class Stream
+    class Parse
     {
-        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist, int ReportCullVal, int ReportPostCullVal)
+        public List<Fields> GetReport(string ReportFile, List<Fields> Whitelist, int i_PreCull, int i_PostCull)
         {
             Document Report = new Document();
 
@@ -79,9 +79,9 @@ namespace Sleep_Downloader
             /// Cull report a few chars after "Consultant" for service planning.
             /// 
             int index = ReportText.IndexOf("Consultant");
-            if (index >= ReportPostCullVal)
+            if (index >= i_PostCull)
             {
-                ReportText = ReportText.Substring(ReportCullVal, index);
+                ReportText = ReportText.Substring(i_PreCull, index);
             }
 
             Regex rgx2 = new Regex("\t|\r|\n|\\s+");
