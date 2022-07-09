@@ -26,7 +26,7 @@ namespace Sleep_Downloader
         {
             InitializeComponent();
 
-            Logger("Sleep Downloader version 2.0.0\n");
+            Logger("Sleep Downloader version 2.0.1\n");
 
             // Populate current whitelist in setup tab.
             Whitelist h_Whitelist = new Whitelist();
@@ -204,7 +204,7 @@ namespace Sleep_Downloader
                                             }
                                             if (AlignmentFlag == false)
                                             {
-                                                Line = Line + "-\t";
+                                                Line += "-\t";
                                             }
                                         }
 
@@ -675,9 +675,9 @@ namespace Sleep_Downloader
                     // Get index of selected field.
                     int i = cVars_Current.SelectedIndex;
                     int j = i - 1;
-                    string TempName         = f_Current[i].Name;
-                    string TempName2        = f_Current[i].Name2;
-                    string TempValue        = f_Current[i].Value;
+                    string TempName     = f_Current[i].Name;
+                    string TempName2    = f_Current[i].Name2;
+                    string TempValue    = f_Current[i].Value;
 
                     f_Current[i].Name   = f_Current[j].Name;
                     f_Current[i].Name2  = f_Current[j].Name2;
@@ -711,9 +711,9 @@ namespace Sleep_Downloader
                     // Get index of selected field.
                     int i = cVars_Current.SelectedIndex;
                     int j = i + 1;
-                    string TempName         = f_Current[i].Name;
-                    string TempName2        = f_Current[i].Name2;
-                    string TempValue        = f_Current[i].Value;
+                    string TempName     = f_Current[i].Name;
+                    string TempName2    = f_Current[i].Name2;
+                    string TempValue    = f_Current[i].Value;
 
                     f_Current[i].Name   = f_Current[j].Name;
                     f_Current[i].Name2  = f_Current[j].Name2;

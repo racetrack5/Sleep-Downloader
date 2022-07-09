@@ -34,7 +34,6 @@ namespace Sleep_Downloader
                 Regex rgx = new Regex("\t|\r|\n|\\s+");
                 string Result = rgx.Replace(Report_Contents[i].Value, " ");
                 Report_Contents[i].Value = Result;
-
             }
 
             // Remove empty variables beginning with _.
